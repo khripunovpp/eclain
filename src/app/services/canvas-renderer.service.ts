@@ -28,6 +28,8 @@ export class CanvasRendererService {
 
       p.setup = () => {
         p.createCanvas(width, height);
+
+        console.log('setup!!!')
         this._onSetupCallback?.(p);
       };
 
@@ -46,6 +48,6 @@ export class CanvasRendererService {
   }
 
   onSetup(callback: (p: p5) => void) {
-    this._onDrawCallback = callback;
+    this._onSetupCallback = callback;
   }
 }

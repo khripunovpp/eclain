@@ -1,5 +1,6 @@
 import {ElementRef, inject, Injectable} from "@angular/core";
 import {CanvasRendererService} from "../../services/canvas-renderer.service";
+import p5 from "p5";
 
 @Injectable({
   providedIn: 'root'
@@ -16,5 +17,13 @@ export class CanvasLayoutService {
       height: number,
   ) {
     this.canvasRendererService.init(canvasContainer, width, height);
+  }
+
+  onUpdate(callback: (p: p5) => void) {
+    this.canvasRendererService.onDraw(callback);
+  }
+
+  onSetup(callback: (p: p5) => void) {
+    this.canvasRendererService.onSetup(callback);
   }
 }
