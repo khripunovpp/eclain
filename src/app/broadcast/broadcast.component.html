@@ -21,7 +21,7 @@
   <div class="videoView">
     <app-video-layer [width]="broadcastService.windowWidth"></app-video-layer>
 
-    <app-canvas-layout [hidden]="!broadcastService.streamStarted()"></app-canvas-layout>
+    <app-canvas-layout *ngIf="broadcastService.streamStarted()"></app-canvas-layout>
 
     <div #dots
          [hidden]="!broadcastService.streamStarted()"
