@@ -4,6 +4,7 @@ import {tfProv} from "../providers/tf.provider";
 import {BroadcastService} from "./broadcast.service";
 import {CanvasLayoutComponent} from "../layers/canvas-layout/canvas-layout.component";
 import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
+import {PointsService} from "../services/points.service";
 
 @Component({
   selector: 'app-broadcast',
@@ -21,14 +22,18 @@ import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
 })
 export class BroadcastComponent {
   videoLayer = viewChild<VideoLayerComponent>(VideoLayerComponent);
+  canvasLayer = viewChild<CanvasLayoutComponent>(CanvasLayoutComponent);
   dots = viewChild<ElementRef<HTMLElement>>('dots');
   readonly broadcastService = inject(BroadcastService);
   readonly tf = inject(tfProv)
-
+  private readonly predictService = inject(PointsService);
 
   ngOnInit() {
     if (!this.videoLayer()?.video()?.nativeElement) return
     this.broadcastService.load(this.videoLayer()!.video()!.nativeElement);
+    this.broadcastService.onPredict.subscribe((dots) => {
+      this.canvasLayer()?.drawPointsByCords(this.predictService.dotsCords);
+    });
   }
 
   onButtonClick() {

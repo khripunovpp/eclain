@@ -2,18 +2,21 @@ import {Injectable} from "@angular/core";
 import {CircularQueue} from "../structures/circular-queue";
 import {Helpers} from "../helpers/helpers";
 
+export type PointCords = Record<string, {
+  x: number,
+  y: number,
+  color: string
+}>
+
+
 @Injectable({
   providedIn: 'root'
 })
-export class PredictService {
+export class PointsService {
   constructor() {
   }
 
-  readonly dotsCords: Record<string, {
-    x: number,
-    y: number,
-    color: string
-  }> = {
+  readonly dotsCords: PointCords = {
     nose: {x: 0, y: 0, color: 'blue'},
     leftEye: {x: 0, y: 0, color: 'red'},
     rightEye: {x: 0, y: 0, color: 'red'},
@@ -31,6 +34,7 @@ export class PredictService {
     rightKnee: {x: 0, y: 0, color: 'red'},
     leftAnkle: {x: 0, y: 0, color: 'red'},
     rightAnkle: {x: 0, y: 0, color: 'red'},
+    mouth: {x: 0, y: 0, color: 'green'},
   }
   readonly #queues: Map<string, unknown> = new Map()
   private readonly bufferLength = 10;
@@ -47,7 +51,7 @@ export class PredictService {
 
   putIfOk(
       key: string,
-      value: [number, number],
+      [x, y]: [number, number],
   ) {
     let shouldUpdateDotsCordsX = 0
     let shouldUpdateDotsCordsY = 0
@@ -57,8 +61,8 @@ export class PredictService {
     if (q) {
       const xBuffer = ((q as any)['x'] as CircularQueue)
       const yBuffer = ((q as any)['y'] as CircularQueue)
-      shouldUpdateDotsCordsX = this.calculateStdDeviation(xBuffer, value[0]);
-      shouldUpdateDotsCordsY = this.calculateStdDeviation(yBuffer, value[1]);
+      shouldUpdateDotsCordsX = this.calculateStdDeviation(xBuffer, x);
+      shouldUpdateDotsCordsY = this.calculateStdDeviation(yBuffer, y);
       lastX = xBuffer.last()
       lastY = yBuffer.last()
     }
@@ -67,17 +71,17 @@ export class PredictService {
     let lastYGreater = true;
 
     if (lastX) {
-      lastXGreater = lastX + 1 > value[0];
+      lastXGreater = lastX + 1 > x
     }
     if (lastY) {
-      lastYGreater = lastY + 1 > value[1];
+      lastYGreater = lastY + 1 > y
     }
 
-    if (this.isOk(shouldUpdateDotsCordsX) && lastXGreater) {
-      this.dotsCords[key].x = value[0];
+    if (this.enoughDeviation(shouldUpdateDotsCordsX) && lastXGreater) {
+      this.dotsCords[key].x = x
     }
-    if (this.isOk(shouldUpdateDotsCordsY) && lastYGreater) {
-      this.dotsCords[key].y = value[1];
+    if (this.enoughDeviation(shouldUpdateDotsCordsY) && lastYGreater) {
+      this.dotsCords[key].y = y
     }
   }
 
@@ -87,7 +91,8 @@ export class PredictService {
     return this.#queues.get(key) as CircularQueue<T>;
   }
 
-  private isOk(
+
+  private enoughDeviation(
       stdDeviation: number
   ) {
     return stdDeviation > this.stdDeviationThreshold;

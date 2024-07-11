@@ -1,9 +1,9 @@
-import {computed, inject, Injectable, NgZone, signal} from "@angular/core";
+import {computed, EventEmitter, inject, Injectable, NgZone, Output} from "@angular/core";
 import {CameraService} from "../services/camera.service";
 import {ModelService} from "../services/model.service";
 import {MovenetModelService} from "../services/movenet-model.service";
 import _ from 'lodash';
-import {PredictService} from "../services/predict.service";
+import {PointCords, PointsService} from "../services/points.service";
 
 
 @Injectable({
@@ -14,11 +14,12 @@ export class BroadcastService {
   }
 
   dotsRefs: Record<string, any> = {}
+  @Output() readonly onPredict = new EventEmitter<PointCords>();
   private readonly _ngZone = inject(NgZone);
   private readonly cameraService = inject(CameraService);
   readonly streamStarted = this.cameraService.streamStarted
   readonly supports = this.cameraService.supports
-  private readonly predictService = inject(PredictService);
+  private readonly predictService = inject(PointsService);
   private readonly modelService = inject(ModelService);
   readonly canEnableCam = computed(() => {
     return this.cameraService.supports() && this.modelService.model();
@@ -87,7 +88,8 @@ export class BroadcastService {
       key: string
   ) {
     if (!this.getCords(key)) return;
-    const enoughConfidence = cords[key].confidence >= this.confidenceThreshold;
+    // может быть undefined, так как не все точки есть в cords, например, рта. модель не определяет рот
+    const enoughConfidence = (cords[key]?.confidence ?? this.confidenceThreshold) >= this.confidenceThreshold;
 
     if (enoughConfidence) {
       this.predictService.putIfOk(key, this.calcAbsoluteCords(cords[key]));
@@ -109,10 +111,17 @@ export class BroadcastService {
         y: number
       },
   ): [number, number] {
-    const {x, y} = this.cropPoints;
+    const [
+      denormalizedX,
+      denormalizedY
+    ] = [
+      this.movenetModelService.cropWidth * value.x,
+      this.movenetModelService.cropWidth * value.y
+    ]
+
     return [
-      Math.ceil((value.x * this.movenetModelService.cropWidth) + x - (this.pointWidth / 2)),
-      Math.ceil((value.y * this.movenetModelService.cropWidth) + y - (this.pointWidth / 2))
+      Math.ceil(denormalizedX - (this.pointWidth / 2)),
+      Math.ceil(denormalizedY - (this.pointWidth / 2))
     ]
   }
 
@@ -165,6 +174,7 @@ export class BroadcastService {
 
   private async _update(cords: any) {
     await this._drawPoints(cords)
+    this.onPredict.emit(this.predictService.dotsCords);
   }
 
   private _enableCam() {

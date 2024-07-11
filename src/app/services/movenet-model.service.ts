@@ -15,12 +15,12 @@ export class MovenetModelService {
   private readonly modelService = inject(ModelService);
 
   bind(
-    canvasElement: HTMLCanvasElement,
+      canvasElement: HTMLCanvasElement,
   ) {
   }
 
   predict(
-    input: any,
+      input: any,
   ) {
     return this.modelService.model().predict(input);
   }
@@ -35,8 +35,8 @@ export class MovenetModelService {
   }
 
   calculateFaceSquare(
-    leftEar: { x: number, y: number },
-    rightEar: { x: number, y: number }
+      leftEar: { x: number, y: number },
+      rightEar: { x: number, y: number }
   ): number {
     // Calculate the distance between ears
     const d = Math.sqrt(Math.pow(rightEar.x - leftEar.x, 2) + Math.pow(rightEar.y - leftEar.y, 2));
@@ -51,15 +51,15 @@ export class MovenetModelService {
   }
 
   calculateFaceWidth(
-    leftEar: { x: number, y: number },
-    rightEar: { x: number, y: number }
+      leftEar: { x: number, y: number },
+      rightEar: { x: number, y: number }
   ): number {
     return Math.abs(rightEar.x - leftEar.x);
   }
 
   calculateFaceHeight(
-    leftEar: { x: number, y: number },
-    rightEar: { x: number, y: number }
+      leftEar: { x: number, y: number },
+      rightEar: { x: number, y: number }
   ): number {
     return this.calculateFaceWidth(leftEar, rightEar) * 1.5;
   }
@@ -98,9 +98,9 @@ export class MovenetModelService {
     return this.tf.slice(image, cropStartPoint, cropSize);
   }
 
-  private _parseCords(arrayOutput: any) {
+  private _parseCords(arrayOutput: any): PredictedCords {
     const points = arrayOutput[0][0];
-    return {
+    return this._mixCords({
       nose: {
         x: points[0][1],
         y: points[0][0],
@@ -185,7 +185,48 @@ export class MovenetModelService {
         x: points[16][1],
         y: points[16][0],
         confidence: points[16][2]
-      }
-    }
+      },
+    });
   }
+
+  private _mixCords(
+      cords: Partial<PredictedCords>,
+  ): PredictedCords {
+    cords.mouth = {
+      ...this.calculateMouthCoordinates(cords.nose!),
+      confidence: 1
+    }
+    return cords as PredictedCords;
+  }
+
+  private calculateMouthCoordinates(noseCords: { x: number; y: number }) {
+    const mouthYOffsetRatio = 0.1; // Это значение зависит от пропорций лица и может потребовать настройки
+    const normalizedMouthYOffset = this.cropWidth * mouthYOffsetRatio;
+    return {
+      x: noseCords.x,
+      y: noseCords.y + normalizedMouthYOffset
+    };
+  }
+}
+
+
+export interface PredictedCords {
+  nose: { x: number; y: number; confidence: number };
+  leftEye: { x: number; y: number; confidence: number };
+  rightEye: { x: number; y: number; confidence: number };
+  leftEar: { x: number; y: number; confidence: number };
+  rightEar: { x: number; y: number; confidence: number };
+  leftShoulder: { x: number; y: number; confidence: number };
+  rightShoulder: { x: number; y: number; confidence: number };
+  leftElbow: { x: number; y: number; confidence: number };
+  rightElbow: { x: number; y: number; confidence: number };
+  leftWrist: { x: number; y: number; confidence: number };
+  rightWrist: { x: number; y: number; confidence: number };
+  leftHip: { x: number; y: number; confidence: number };
+  rightHip: { x: number; y: number; confidence: number };
+  leftKnee: { x: number; y: number; confidence: number };
+  rightKnee: { x: number; y: number; confidence: number };
+  leftAnkle: { x: number; y: number; confidence: number };
+  rightAnkle: { x: number; y: number; confidence: number };
+  mouth: { x: number; y: number; confidence: number };
 }
