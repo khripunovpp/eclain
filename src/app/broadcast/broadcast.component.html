@@ -19,26 +19,22 @@
 
 
   <div class="videoView">
-    <video #webcam
-           [attr.height]="broadcastService.windowWidth"
-           autoplay
-           muted
-           playsinline>
+    <app-video-layer [width]="broadcastService.windowWidth"></app-video-layer>
 
-    </video>
+    <app-canvas-layout [hidden]="!broadcastService.streamStarted()"></app-canvas-layout>
 
-    <div #dots
-         [hidden]="!broadcastService.streamStarted()"
-         class="dots">
-      <div #window
-           [style.height.px]="broadcastService.windowWidth"
-           [style.left.px]="broadcastService.windowCords.x"
-           [style.top.px]="broadcastService.windowCords.y"
-           [style.width.px]="broadcastService.windowWidth"
-           class="window">
+    <!--    <div #dots-->
+    <!--         [hidden]="!broadcastService.streamStarted()"-->
+    <!--         class="dots">-->
+    <!--      <div #window-->
+    <!--           [style.height.px]="broadcastService.windowWidth"-->
+    <!--           [style.left.px]="broadcastService.windowCords.x"-->
+    <!--           [style.top.px]="broadcastService.windowCords.y"-->
+    <!--           [style.width.px]="broadcastService.windowWidth"-->
+    <!--           class="window">-->
 
-      </div>
-    </div>
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
   <div class="footer">
   </div>
