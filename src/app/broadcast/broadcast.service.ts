@@ -2,9 +2,8 @@ import {computed, inject, Injectable, NgZone, signal} from "@angular/core";
 import {CameraService} from "../services/camera.service";
 import {ModelService} from "../services/model.service";
 import {MovenetModelService} from "../services/movenet-model.service";
-import {Helpers} from "../helpers/helpers";
 import _ from 'lodash';
-import {CircularQueue} from "../structures/circular-queue";
+import {PredictService} from "../services/predict.service";
 
 
 @Injectable({
@@ -15,47 +14,20 @@ export class BroadcastService {
   }
 
   dotsRefs: Record<string, any> = {}
-  readonly zoom = signal(1);
-  readonly transitionDuration = 50;
   private readonly _ngZone = inject(NgZone);
-  readonly #queues: Map<string, unknown> = new Map()
   private readonly cameraService = inject(CameraService);
   readonly streamStarted = this.cameraService.streamStarted
   readonly supports = this.cameraService.supports
+  private readonly predictService = inject(PredictService);
   private readonly modelService = inject(ModelService);
   readonly canEnableCam = computed(() => {
     return this.cameraService.supports() && this.modelService.model();
   });
   readonly modelReady = this.modelService.model
   private readonly movenetModelService = inject(MovenetModelService);
-  private readonly dotsCords: Record<string, {
-    x: number,
-    y: number,
-    color: string
-  }> = {
-    nose: {x: 0, y: 0, color: 'blue'},
-    leftEye: {x: 0, y: 0, color: 'red'},
-    rightEye: {x: 0, y: 0, color: 'red'},
-    leftEar: {x: 0, y: 0, color: 'red'},
-    rightEar: {x: 0, y: 0, color: 'red'},
-    leftShoulder: {x: 0, y: 0, color: 'red'},
-    rightShoulder: {x: 0, y: 0, color: 'red'},
-    leftElbow: {x: 0, y: 0, color: 'red'},
-    rightElbow: {x: 0, y: 0, color: 'red'},
-    leftWrist: {x: 0, y: 0, color: 'red'},
-    rightWrist: {x: 0, y: 0, color: 'red'},
-    leftHip: {x: 0, y: 0, color: 'red'},
-    rightHip: {x: 0, y: 0, color: 'red'},
-    leftKnee: {x: 0, y: 0, color: 'red'},
-    rightKnee: {x: 0, y: 0, color: 'red'},
-    leftAnkle: {x: 0, y: 0, color: 'red'},
-    rightAnkle: {x: 0, y: 0, color: 'red'},
-  }
   private readonly pointWidth = 4;
   private readonly confidenceThreshold = 0.4;
   private readonly predictDelay = 100;
-  private readonly bufferLength = 10;
-  private readonly stdDeviationThreshold = 0.3;
   private readonly predictWebcamThrottled = _.throttle(() => {
     this._ngZone.runOutsideAngular(() => {
       this.predictWebcam();
@@ -81,35 +53,20 @@ export class BroadcastService {
 
   get faceWidth() {
     return this.movenetModelService.calculateFaceWidth(
-      this.dotsCords['leftEar'],
-      this.dotsCords['rightEar']
+        this.predictService.dotsCords['leftEar'],
+        this.predictService.dotsCords['rightEar']
     )
   }
 
   get faceHeight() {
     return this.movenetModelService.calculateFaceHeight(
-      this.dotsCords['leftEar'],
-      this.dotsCords['rightEar']
+        this.predictService.dotsCords['leftEar'],
+        this.predictService.dotsCords['rightEar']
     )
   }
 
-  getQueue<T = number>(
-    key: string
-  ) {
-    return this.#queues.get(key) as CircularQueue<T>;
-  }
-
-  initQueues() {
-    Object.keys(this.dotsCords).forEach((key) => {
-      this.#queues.set(key, {
-        x: new CircularQueue(this.bufferLength),
-        y: new CircularQueue(this.bufferLength),
-      });
-    });
-  }
-
   load(
-    video: HTMLVideoElement
+      video: HTMLVideoElement
   ) {
     this.modelService.load().then(() => {
       this.cameraService.bind(video);
@@ -126,66 +83,31 @@ export class BroadcastService {
   }
 
   putDot(
-    cords: Record<string, { x: number; y: number; confidence: number }>,
-    key: string
+      cords: Record<string, { x: number; y: number; confidence: number }>,
+      key: string
   ) {
     if (!this.getCords(key)) return;
     const enoughConfidence = cords[key].confidence >= this.confidenceThreshold;
 
     if (enoughConfidence) {
-      this.putIfOk(key, this.calcAbsoluteCords(cords[key]));
+      this.predictService.putIfOk(key, this.calcAbsoluteCords(cords[key]));
     }
 
     this.updateDot(key);
   }
 
-  putIfOk(
-    key: string,
-    value: [number, number],
-  ) {
-    let shouldUpdateDotsCordsX = 0
-    let shouldUpdateDotsCordsY = 0
-    let lastX = 0
-    let lastY = 0
-    const q = this.#queues.get(key)
-    if (q) {
-      const xBuffer = ((q as any)['x'] as CircularQueue)
-      const yBuffer = ((q as any)['y'] as CircularQueue)
-      shouldUpdateDotsCordsX = this.calculateStdDeviation(xBuffer, value[0]);
-      shouldUpdateDotsCordsY = this.calculateStdDeviation(yBuffer, value[1]);
-      lastX = xBuffer.last()
-      lastY = yBuffer.last()
-    }
-
-    let lastXGreater = true;
-    let lastYGreater = true;
-
-    if (lastX) {
-      lastXGreater = lastX + 1 > value[0];
-    }
-    if (lastY) {
-      lastYGreater = lastY + 1 > value[1];
-    }
-
-    if (this.isOk(shouldUpdateDotsCordsX) && lastXGreater) {
-      this.dotsCords[key].x = value[0];
-    }
-    if (this.isOk(shouldUpdateDotsCordsY) && lastYGreater) {
-      this.dotsCords[key].y = value[1];
-    }
-  }
 
   getCords(
-    key: string
+      key: string
   ) {
-    return this.dotsCords[key];
+    return this.predictService.dotsCords[key];
   }
 
   calcAbsoluteCords(
-    value: {
-      x: number
-      y: number
-    },
+      value: {
+        x: number
+        y: number
+      },
   ): [number, number] {
     const {x, y} = this.cropPoints;
     return [
@@ -195,28 +117,28 @@ export class BroadcastService {
   }
 
   updateDot(
-    key: string
+      key: string
   ) {
     if (!this.dotsRefs[key]) return;
-    this.dotsRefs[key].style.top = `${this.dotsCords[key].y}px`;
-    this.dotsRefs[key].style.left = `${this.dotsCords[key].x}px`;
+    this.dotsRefs[key].style.top = `${this.predictService.dotsCords[key].y}px`;
+    this.dotsRefs[key].style.left = `${this.predictService.dotsCords[key].x}px`;
   }
 
   predictWebcam() {
     this.movenetModelService.calculate()
-      .then(cords => this._update(cords))
-      .then(() => {
-        window.requestAnimationFrame(() => {
-          this.predictWebcamThrottled();
+        .then(cords => this._update(cords))
+        .then(() => {
+          window.requestAnimationFrame(() => {
+            this.predictWebcamThrottled();
+          });
+        })
+        .catch((error: any) => {
+          console.error(error);
         });
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
   }
 
   makePhotoByTimeout(
-    timeout: number
+      timeout: number
   ) {
     setTimeout(() => {
       this.makePhoto();
@@ -228,7 +150,7 @@ export class BroadcastService {
   }
 
   openPhotoInNewTab(
-    dataUrl: string
+      dataUrl: string
   ) {
     const win = window.open();
     if (!win) return;
@@ -236,7 +158,7 @@ export class BroadcastService {
   }
 
   private async _drawPoints(cords: any) {
-    Object.keys(this.dotsCords).forEach((key) => {
+    Object.keys(this.predictService.dotsCords).forEach((key) => {
       this.putDot(cords, key);
     });
   }
@@ -247,26 +169,8 @@ export class BroadcastService {
 
   private _enableCam() {
     this.cameraService.enableCam().then(() => {
-      this.initQueues();
+      this.predictService.initQueues();
       this.predictWebcamThrottled();
     })
-  }
-
-  private isOk(
-    stdDeviation: number
-  ) {
-    return stdDeviation > this.stdDeviationThreshold;
-  }
-
-  private calculateStdDeviation(
-    coords: CircularQueue,
-    newValue: number,
-  ): number {
-    if (newValue) coords.enqueue(newValue);
-    const queue = coords.getQueue();
-    return Helpers.calculateStdDeviation(
-      queue,
-      Helpers.calculateMean(queue)
-    );
   }
 }
