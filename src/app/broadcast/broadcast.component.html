@@ -1,0 +1,45 @@
+<div #liveView
+     class="camView">
+  @if (broadcastService.supports()) {
+    <button *ngIf="!broadcastService.streamStarted()"
+            [disabled]="!broadcastService.canEnableCam()"
+            (click)="onButtonClick()"
+            class="enableCamButton">
+      {{
+        broadcastService.modelReady()
+          ? 'Enable \nWebcam'
+          : 'Wait \nbitch'
+      }}
+    </button>
+  } @else {
+    <p class="noSupport">
+      Ohh shit! I'm done, i cannot take it
+    </p>
+  }
+
+
+  <div class="videoView">
+    <video #webcam
+           [attr.height]="broadcastService.windowWidth"
+           autoplay
+           muted
+           playsinline>
+
+    </video>
+
+    <div #dots
+         [hidden]="!broadcastService.streamStarted()"
+         class="dots">
+      <div #window
+           [style.height.px]="broadcastService.windowWidth"
+           [style.left.px]="broadcastService.windowCords.x"
+           [style.top.px]="broadcastService.windowCords.y"
+           [style.width.px]="broadcastService.windowWidth"
+           class="window">
+
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+  </div>
+</div>
