@@ -18,11 +18,10 @@ export class BroadcastService {
   private readonly _ngZone = inject(NgZone);
   private readonly cameraService = inject(CameraService);
   readonly streamStarted = this.cameraService.streamStarted
-  readonly supports = this.cameraService.supports
   private readonly pointsService = inject(PointsService);
   private readonly modelService = inject(ModelService);
   readonly canEnableCam = computed(() => {
-    return this.cameraService.supports() && this.modelService.model();
+    return this.cameraService.supports && this.modelService.model();
   });
   readonly modelReady = this.modelService.model
   private readonly movenetModelService = inject(MovenetModelService);
@@ -69,14 +68,12 @@ export class BroadcastService {
   load(
       video: HTMLVideoElement
   ) {
-    this.modelService.load().then(() => {
-      this.cameraService.bind(video);
-    });
+    this.modelService.load();
   }
 
   enable() {
     if (!this.modelService.model()) return;
-    if (this.cameraService.supports()) {
+    if (this.cameraService.supports) {
       this._enableCam();
     } else {
       console.warn('getUserMedia() is not supported by your browser');

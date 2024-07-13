@@ -16,8 +16,7 @@ import {PointsService} from "../services/points.service";
     VideoLayerComponent
   ],
   templateUrl: './broadcast.component.html',
-  styleUrl: './broadcast.component.scss',
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./broadcast.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BroadcastComponent {
@@ -36,7 +35,7 @@ export class BroadcastComponent {
     });
   }
 
-  onButtonClick() {
+  enable() {
     this.broadcastService.enable();
   }
 

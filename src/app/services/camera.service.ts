@@ -8,49 +8,38 @@ export class CameraService {
   constraints = {
     video: true
   };
-  supports = signal(!!(navigator.mediaDevices &&
-    navigator.mediaDevices.getUserMedia))
-  video = signal<HTMLVideoElement | null>(null)
+  supports = !!(navigator.mediaDevices &&
+      navigator.mediaDevices.getUserMedia)
+  video: HTMLVideoElement | null = null;
 
   bind(
-    videoElement: HTMLVideoElement,
+      videoElement: HTMLVideoElement,
   ) {
-    this.video.set(videoElement);
+    this.video = videoElement;
   }
 
   enableCam() {
     return new Promise<void>((resolve, reject) => {
       return navigator.mediaDevices.getUserMedia(this.constraints)
-        .then((stream: any) => {
-          if (!this.video()) return
-          this.video()!.srcObject = stream;
-          this.video()!.addEventListener('loadeddata', () => {
-            this.streamStarted.set(true);
-            resolve();
+          .then((stream: any) => {
+            if (!this.video) return
+            this.video.srcObject = stream;
+            this.video.addEventListener('loadeddata', () => {
+              this.streamStarted.set(true);
+              resolve();
+            });
           });
-
-          this.video()!.addEventListener( "loadedmetadata", function (e) {
-    var width = this.videoWidth,
-        height = this.videoHeight;
-
-            console.log({
-              width,
-              height
-
-            })
-}, false );
-        });
     });
   }
 
   makePhoto() {
-    if (!this.video()?.videoWidth || !this.video()?.videoHeight) return;
+    if (!this.video?.videoWidth || !this.video?.videoHeight) return;
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (!context) return;
-    canvas.width = this.video()!.videoWidth;
-    canvas.height = this.video()!.videoHeight;
-    context.drawImage(this.video()!, 0, 0, canvas.width, canvas.height);
+    canvas.width = this.video.videoWidth;
+    canvas.height = this.video.videoHeight;
+    context.drawImage(this.video, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL('image/png');
   }
 }

@@ -53,7 +53,7 @@ export class MovenetModelService {
   }
 
   getCropPoint() {
-    const video = this.cameraService.video()!;
+    const video = this.cameraService.video;
     if (!video) return [0, 0];
     return [
       Math.abs(video.videoWidth - this.cropWidth) / 2,
@@ -93,7 +93,7 @@ export class MovenetModelService {
 
   prepareImgTensor() {
     const points = this.getCropPoint();
-    const imageTensor = this.tf.browser.fromPixels(this.cameraService.video());
+    const imageTensor = this.tf.browser.fromPixels(this.cameraService.video);
     const croppedImage = this._cropImage(imageTensor, points[0], points[1], this.cropWidth);
     const resizedImage = this.tf.image.resizeBilinear(croppedImage, [192, 192], true).toInt();
     const tensor = this.tf.expandDims(resizedImage);

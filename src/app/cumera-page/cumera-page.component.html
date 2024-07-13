@@ -1,0 +1,18 @@
+@if (supports) {
+  <button *ngIf="displayEnableButton"
+          [disabled]="!readyToEnable"
+          (click)="onButtonClick()"
+          class="enableCamButton">
+    {{
+      readyToEnable
+        ? 'Enable \nWebcam'
+        : 'Wait \nbitch'
+    }}
+  </button>
+
+  <app-broadcast></app-broadcast>
+} @else {
+  <p class="noSupport">
+    Ohh shit! I'm done, i cannot take it
+  </p>
+}
