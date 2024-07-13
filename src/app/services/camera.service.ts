@@ -28,6 +28,17 @@ export class CameraService {
             this.streamStarted.set(true);
             resolve();
           });
+
+          this.video()!.addEventListener( "loadedmetadata", function (e) {
+    var width = this.videoWidth,
+        height = this.videoHeight;
+
+            console.log({
+              width,
+              height
+
+            })
+}, false );
         });
     });
   }

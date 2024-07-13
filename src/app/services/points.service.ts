@@ -1,8 +1,9 @@
 import {Injectable} from "@angular/core";
 import {CircularQueue} from "../structures/circular-queue";
 import {Helpers} from "../helpers/helpers";
+import {PointNameAsSting, PredictedCords} from "./movenet-model.service";
 
-export type PointCords = Record<string, {
+export type PointCords = Record<PointNameAsSting, {
   x: number,
   y: number,
   color: string
@@ -34,7 +35,10 @@ export class PointsService {
     rightKnee: {x: 0, y: 0, color: 'red'},
     leftAnkle: {x: 0, y: 0, color: 'red'},
     rightAnkle: {x: 0, y: 0, color: 'red'},
-    mouth: {x: 0, y: 0, color: 'green'},
+    upperLip: {x: 0, y: 0, color: 'green'},
+    lowerLip: {x: 0, y: 0, color: 'green'},
+    leftCornerOfMouth: {x: 0, y: 0, color: 'green'},
+    rightCornerOfMouth: {x: 0, y: 0, color: 'green'},
   }
   readonly #queues: Map<string, unknown> = new Map()
   private readonly bufferLength = 10;
@@ -50,7 +54,7 @@ export class PointsService {
   }
 
   putIfOk(
-      key: string,
+      key: PointNameAsSting,
       [x, y]: [number, number],
   ) {
     let shouldUpdateDotsCordsX = 0

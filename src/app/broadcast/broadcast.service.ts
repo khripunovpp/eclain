@@ -1,7 +1,7 @@
 import {computed, EventEmitter, inject, Injectable, NgZone, Output} from "@angular/core";
 import {CameraService} from "../services/camera.service";
 import {ModelService} from "../services/model.service";
-import {MovenetModelService} from "../services/movenet-model.service";
+import {MovenetModelService, PointNameAsSting, PredictedCords} from "../services/movenet-model.service";
 import _ from 'lodash';
 import {PointCords, PointsService} from "../services/points.service";
 
@@ -19,7 +19,7 @@ export class BroadcastService {
   private readonly cameraService = inject(CameraService);
   readonly streamStarted = this.cameraService.streamStarted
   readonly supports = this.cameraService.supports
-  private readonly predictService = inject(PointsService);
+  private readonly pointsService = inject(PointsService);
   private readonly modelService = inject(ModelService);
   readonly canEnableCam = computed(() => {
     return this.cameraService.supports() && this.modelService.model();
@@ -54,15 +54,15 @@ export class BroadcastService {
 
   get faceWidth() {
     return this.movenetModelService.calculateFaceWidth(
-        this.predictService.dotsCords['leftEar'],
-        this.predictService.dotsCords['rightEar']
+        this.pointsService.dotsCords['leftEar'],
+        this.pointsService.dotsCords['rightEar']
     )
   }
 
   get faceHeight() {
     return this.movenetModelService.calculateFaceHeight(
-        this.predictService.dotsCords['leftEar'],
-        this.predictService.dotsCords['rightEar']
+        this.pointsService.dotsCords['leftEar'],
+        this.pointsService.dotsCords['rightEar']
     )
   }
 
@@ -84,15 +84,16 @@ export class BroadcastService {
   }
 
   putDot(
-      cords: Record<string, { x: number; y: number; confidence: number }>,
-      key: string
+      cords: PredictedCords,
+      key: PointNameAsSting
   ) {
     if (!this.getCords(key)) return;
+
     // может быть undefined, так как не все точки есть в cords, например, рта. модель не определяет рот
-    const enoughConfidence = (cords[key]?.confidence ?? this.confidenceThreshold) >= this.confidenceThreshold;
+    const enoughConfidence = cords[key].confidence >= this.confidenceThreshold;
 
     if (enoughConfidence) {
-      this.predictService.putIfOk(key, this.calcAbsoluteCords(cords[key]));
+      this.pointsService.putIfOk(key, this.calcAbsoluteCords(cords[key]));
     }
 
     this.updateDot(key);
@@ -100,9 +101,9 @@ export class BroadcastService {
 
 
   getCords(
-      key: string
+      key: PointNameAsSting
   ) {
-    return this.predictService.dotsCords[key];
+    return this.pointsService.dotsCords[key];
   }
 
   calcAbsoluteCords(
@@ -126,11 +127,11 @@ export class BroadcastService {
   }
 
   updateDot(
-      key: string
+      key: PointNameAsSting
   ) {
     if (!this.dotsRefs[key]) return;
-    this.dotsRefs[key].style.top = `${this.predictService.dotsCords[key].y}px`;
-    this.dotsRefs[key].style.left = `${this.predictService.dotsCords[key].x}px`;
+    this.dotsRefs[key].style.top = `${this.pointsService.dotsCords[key].y}px`;
+    this.dotsRefs[key].style.left = `${this.pointsService.dotsCords[key].x}px`;
   }
 
   predictWebcam() {
@@ -166,20 +167,22 @@ export class BroadcastService {
     win.document.write(`<img src="${dataUrl}"/>`);
   }
 
-  private async _drawPoints(cords: any) {
-    Object.keys(this.predictService.dotsCords).forEach((key) => {
-      this.putDot(cords, key);
+  private async _drawPoints(
+      cords: PredictedCords,
+  ) {
+    Object.keys(this.pointsService.dotsCords).forEach((key) => {
+      this.putDot(cords, key as PointNameAsSting);
     });
   }
 
   private async _update(cords: any) {
     await this._drawPoints(cords)
-    this.onPredict.emit(this.predictService.dotsCords);
+    this.onPredict.emit(this.pointsService.dotsCords);
   }
 
   private _enableCam() {
     this.cameraService.enableCam().then(() => {
-      this.predictService.initQueues();
+      this.pointsService.initQueues();
       this.predictWebcamThrottled();
     })
   }

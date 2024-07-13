@@ -26,13 +26,13 @@ export class BroadcastComponent {
   dots = viewChild<ElementRef<HTMLElement>>('dots');
   readonly broadcastService = inject(BroadcastService);
   readonly tf = inject(tfProv)
-  private readonly predictService = inject(PointsService);
+  private readonly pointsService = inject(PointsService);
 
   ngOnInit() {
     if (!this.videoLayer()?.video()?.nativeElement) return
     this.broadcastService.load(this.videoLayer()!.video()!.nativeElement);
     this.broadcastService.onPredict.subscribe((dots) => {
-      this.canvasLayer()?.drawPointsByCords(this.predictService.dotsCords);
+      this.canvasLayer()?.drawPointsByCords(this.pointsService.dotsCords);
     });
   }
 

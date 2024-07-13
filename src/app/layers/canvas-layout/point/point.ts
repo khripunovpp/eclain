@@ -28,7 +28,7 @@ export class Point {
   show(
       p: p5,
   ) {
-    p.stroke(255);
+    p.stroke(this.color);
     p.strokeWeight(2);
     p.fill(this.color);
     p.push();

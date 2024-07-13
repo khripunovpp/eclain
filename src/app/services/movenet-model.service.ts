@@ -3,6 +3,33 @@ import {tfProv} from "../providers/tf.provider";
 import {ModelService} from "./model.service";
 import {CameraService} from "./camera.service";
 
+
+export type PointNameAsSting = keyof PredictedCords;
+
+export interface PredictedCords {
+  nose: { x: number; y: number; confidence: number };
+  leftEye: { x: number; y: number; confidence: number };
+  rightEye: { x: number; y: number; confidence: number };
+  leftEar: { x: number; y: number; confidence: number };
+  rightEar: { x: number; y: number; confidence: number };
+  leftShoulder: { x: number; y: number; confidence: number };
+  rightShoulder: { x: number; y: number; confidence: number };
+  leftElbow: { x: number; y: number; confidence: number };
+  rightElbow: { x: number; y: number; confidence: number };
+  leftWrist: { x: number; y: number; confidence: number };
+  rightWrist: { x: number; y: number; confidence: number };
+  leftHip: { x: number; y: number; confidence: number };
+  rightHip: { x: number; y: number; confidence: number };
+  leftKnee: { x: number; y: number; confidence: number };
+  rightKnee: { x: number; y: number; confidence: number };
+  leftAnkle: { x: number; y: number; confidence: number };
+  rightAnkle: { x: number; y: number; confidence: number };
+  upperLip: { x: number; y: number; confidence: number };
+  lowerLip: { x: number; y: number; confidence: number };
+  leftCornerOfMouth: { x: number; y: number; confidence: number };
+  rightCornerOfMouth: { x: number; y: number; confidence: number };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,7 +56,7 @@ export class MovenetModelService {
     const video = this.cameraService.video()!;
     if (!video) return [0, 0];
     return [
-      (video.videoWidth - this.cropWidth) / 2,
+      Math.abs(video.videoWidth - this.cropWidth) / 2,
       0,
     ]
   }
@@ -90,6 +117,42 @@ export class MovenetModelService {
     img.dispose();
     tensorOutput.dispose();
     return cords;
+  }
+
+  calculateAdditionalPoints(
+      cords: Partial<PredictedCords>,
+  ) {
+    const leftEye = cords.leftEye; // Индексы точек глаз из модели
+    const rightEye = cords.rightEye;
+    const nose = cords.nose;
+
+    if (!leftEye || !rightEye || !nose) {
+      return;
+    }
+
+    const coeff = 0.1;
+    const upperLip = {
+      x: (leftEye.x + rightEye.x) / 2,
+      y: nose.y + Math.abs(nose.y - leftEye.y) * 0.95,
+      confidence: 1,
+    };
+    const lowerLip = {
+      x: upperLip.x,
+      y: upperLip.y + Math.abs(nose.y - leftEye.y) * 0.3,
+      confidence: 1,
+    };
+    const leftCornerOfMouth = {
+      x: leftEye.x - Math.abs(leftEye.x - rightEye.x) * coeff,
+      y: upperLip.y + Math.abs(upperLip.y - lowerLip.y) * 0.5,
+      confidence: 1,
+    };
+    const rightCornerOfMouth = {
+      x: rightEye.x + Math.abs(leftEye.x - rightEye.x) * coeff,
+      y: upperLip.y + Math.abs(upperLip.y - lowerLip.y) * 0.5,
+      confidence: 1,
+    };
+
+    return {upperLip, lowerLip, leftCornerOfMouth, rightCornerOfMouth};
   }
 
   private _cropImage(image: any, x: any, y: any, width: any) {
@@ -192,41 +255,10 @@ export class MovenetModelService {
   private _mixCords(
       cords: Partial<PredictedCords>,
   ): PredictedCords {
-    cords.mouth = {
-      ...this.calculateMouthCoordinates(cords.nose!),
-      confidence: 1
+    cords = {
+      ...cords,
+      ...this.calculateAdditionalPoints(cords),
     }
     return cords as PredictedCords;
   }
-
-  private calculateMouthCoordinates(noseCords: { x: number; y: number }) {
-    const mouthYOffsetRatio = 0.1; // Это значение зависит от пропорций лица и может потребовать настройки
-    const normalizedMouthYOffset = this.cropWidth * mouthYOffsetRatio;
-    return {
-      x: noseCords.x,
-      y: noseCords.y + normalizedMouthYOffset
-    };
-  }
-}
-
-
-export interface PredictedCords {
-  nose: { x: number; y: number; confidence: number };
-  leftEye: { x: number; y: number; confidence: number };
-  rightEye: { x: number; y: number; confidence: number };
-  leftEar: { x: number; y: number; confidence: number };
-  rightEar: { x: number; y: number; confidence: number };
-  leftShoulder: { x: number; y: number; confidence: number };
-  rightShoulder: { x: number; y: number; confidence: number };
-  leftElbow: { x: number; y: number; confidence: number };
-  rightElbow: { x: number; y: number; confidence: number };
-  leftWrist: { x: number; y: number; confidence: number };
-  rightWrist: { x: number; y: number; confidence: number };
-  leftHip: { x: number; y: number; confidence: number };
-  rightHip: { x: number; y: number; confidence: number };
-  leftKnee: { x: number; y: number; confidence: number };
-  rightKnee: { x: number; y: number; confidence: number };
-  leftAnkle: { x: number; y: number; confidence: number };
-  rightAnkle: { x: number; y: number; confidence: number };
-  mouth: { x: number; y: number; confidence: number };
 }
