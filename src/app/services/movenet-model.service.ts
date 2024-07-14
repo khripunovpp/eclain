@@ -96,9 +96,28 @@ export class MovenetModelService {
     return this.calculateFaceWidth(leftEar, rightEar) * 1.5;
   }
 
+  createTensorFromVideoElement(
+      videoElement: HTMLVideoElement,
+      targetWidth: number,
+      targetHeight: number
+  ) {
+    const canvas = document.createElement('canvas');
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(videoElement, 0, 0, targetWidth, targetHeight);
+
+    return this.tf.browser.fromPixels(canvas);
+  }
+
   prepareImgTensor() {
     const points = this.getCropPoint();
-    const imageTensor = this.tf.browser.fromPixels(this.cameraService.video);
+    const imageTensor = this.createTensorFromVideoElement(
+        this.cameraService.video!,
+        this.cameraService.video!.clientWidth,
+        this.cameraService.video!.clientHeight
+    );
     const croppedImage = this._cropImage(imageTensor, points[0], points[1], this.cropWidth);
     const resizedImage = this.tf.image.resizeBilinear(croppedImage, [192, 192], true).toInt();
     const tensor = this.tf.expandDims(resizedImage);
@@ -163,6 +182,11 @@ export class MovenetModelService {
   private _cropImage(image: any, x: any, y: any, width: any) {
     const cropStartPoint = [y, x];
     const cropSize = [width, width];
+    console.log('cropImage', {
+      cropStartPoint,
+      cropSize,
+
+    })
     return this.tf.slice(image, cropStartPoint, cropSize);
   }
 

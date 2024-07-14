@@ -90,6 +90,7 @@ export class BroadcastService {
     const enoughConfidence = cords[key].confidence >= this.confidenceThreshold;
 
     if (enoughConfidence) {
+      console.log('enoughConfidence', key, cords[key], cords)
       this.pointsService.putIfOk(key, this.calcAbsoluteCords(cords[key]));
     }
 
@@ -116,6 +117,12 @@ export class BroadcastService {
       this.movenetModelService.cropWidth * value.x,
       this.movenetModelService.cropWidth * value.y
     ]
+
+    console.log({
+      denormalizedX,
+      denormalizedY
+
+    })
 
     return [
       Math.ceil(denormalizedX - (this.pointWidth / 2)),
