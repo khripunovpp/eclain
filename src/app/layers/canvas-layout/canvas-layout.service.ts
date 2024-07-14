@@ -4,6 +4,7 @@ import p5 from "p5";
 import {PointCords} from "../../services/points.service";
 import {Point} from "./objects/point";
 import {Eclair} from "./objects/eclair";
+import {Mouth} from "./objects/mouth";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class CanvasLayoutService {
   points: Point[] = []
   eclairs: Eclair[] = []
   eclairsCount = 10;
+  private mouth?: Mouth;
   private readonly canvasRendererService = inject(CanvasRendererService)
 
   get renderer() {
@@ -37,6 +39,13 @@ export class CanvasLayoutService {
     }
   }
 
+  addMouth(
+      cords: PointCords,
+  ) {
+    if (!this.renderer) return;
+    this.mouth = Mouth.factory(this.renderer, cords);
+  }
+
   init(
       canvasContainer: ElementRef,
       width: number,
@@ -44,14 +53,27 @@ export class CanvasLayoutService {
   ) {
     this.canvasRendererService.init(canvasContainer, width, height);
 
+    this.canvasRendererService.onDraw((p: p5) => {
+      p.clear();
+
+      let currentTime = p.frameCount / 60;
+
+      for (let eclair of this.eclairs) {
+        eclair.update(currentTime);
+        eclair.display();
+      }
+
+      for (let point of this.points) {
+        point.show(p)
+        point.update(p)
+      }
+
+      if (this.mouth) {
+        this.mouth.show();
+      }
+    });
+
     this.generateEclairs();
   }
 
-  onUpdate(callback: (p: p5) => void) {
-    this.canvasRendererService.onDraw(callback);
-  }
-
-  onSetup(callback: (p: p5) => void) {
-    this.canvasRendererService.onSetup(callback);
-  }
 }

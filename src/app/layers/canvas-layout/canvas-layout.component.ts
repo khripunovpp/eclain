@@ -18,22 +18,6 @@ export class CanvasLayoutComponent
 
   ngAfterViewInit() {
     this.canvasLayoutService.init(this.canvasContainer, this.width, this.height);
-
-    this.canvasLayoutService.onUpdate((p: p5) => {
-      p.clear();
-
-      let currentTime = p.frameCount / 60;
-
-      for (let eclair of this.canvasLayoutService.eclairs) {
-        eclair.update(currentTime);
-        eclair.display();
-      }
-
-      for (let point of this.canvasLayoutService.points) {
-        point.show(p)
-        point.update(p)
-      }
-    })
   }
 
 }
