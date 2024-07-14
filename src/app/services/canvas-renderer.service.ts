@@ -1,18 +1,17 @@
 import {ElementRef, Injectable} from "@angular/core";
 import p5 from "p5";
 
+export type CanvasRenderer =  p5;
+
 @Injectable({
   providedIn: 'root'
 })
 export class CanvasRendererService {
-  private _p5?: p5;
+  private _p5?: CanvasRenderer;
   private _onDrawCallback?: (p: p5) => void;
   private _onSetupCallback?: (p: p5) => void;
 
   get renderer() {
-    if (!this._p5) {
-      throw new Error('p5 is not initialized');
-    }
     return this._p5;
   }
 
@@ -29,7 +28,6 @@ export class CanvasRendererService {
       p.setup = () => {
         p.createCanvas(width, height);
 
-        console.log('setup!!!')
         this._onSetupCallback?.(p);
       };
 

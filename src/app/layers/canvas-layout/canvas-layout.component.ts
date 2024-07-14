@@ -1,8 +1,6 @@
 import {AfterViewInit, Component, ElementRef, inject, Input, ViewChild} from '@angular/core';
 import {CanvasLayoutService} from "./canvas-layout.service";
 import p5 from "p5";
-import {Point} from "./point/point";
-import {PointCords} from "../../services/points.service";
 
 @Component({
   selector: 'app-canvas-layout',
@@ -17,26 +15,25 @@ export class CanvasLayoutComponent
   @Input({required: true}) width!: number
   @Input({required: true}) height!: number
   private readonly canvasLayoutService = inject(CanvasLayoutService)
-  private points: Point[] = []
 
   ngAfterViewInit() {
     this.canvasLayoutService.init(this.canvasContainer, this.width, this.height);
 
     this.canvasLayoutService.onUpdate((p: p5) => {
       p.clear();
-      for (let point of this.points) {
+
+      let currentTime = p.frameCount / 60;
+
+      for (let eclair of this.canvasLayoutService.eclairs) {
+        eclair.update(currentTime);
+        eclair.display();
+      }
+
+      for (let point of this.canvasLayoutService.points) {
         point.show(p)
         point.update(p)
       }
     })
   }
 
-  drawPointsByCords(
-      cords: PointCords
-  ) {
-    this.points = []
-    for (let [key, value] of Object.entries(cords)) {
-      this.points.push(new Point(value.x, value.y, value.color))
-    }
-  }
 }

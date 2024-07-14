@@ -182,11 +182,6 @@ export class MovenetModelService {
   private _cropImage(image: any, x: any, y: any, width: any) {
     const cropStartPoint = [y, x];
     const cropSize = [width, width];
-    console.log('cropImage', {
-      cropStartPoint,
-      cropSize,
-
-    })
     return this.tf.slice(image, cropStartPoint, cropSize);
   }
 
