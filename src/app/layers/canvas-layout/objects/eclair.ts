@@ -10,7 +10,7 @@ export class Eclair {
   velocity = this.cr.createVector(0, 1);
   // size = this.cr.random(2, 5)
   radius = 20
-  color = this.cr.random(200, 256)
+  color = 255
 
   update(
       time: number,
@@ -18,7 +18,7 @@ export class Eclair {
     this.pos.add(this.velocity);
 
     if (this.pos.y > this.cr.height) {
-      this.pos.set(this.cr.random(this.cr.width),-50);
+      this.reset();
     }
   }
 
@@ -26,5 +26,9 @@ export class Eclair {
     this.cr.fill(this.color);
     this.cr.noStroke();
     this.cr.ellipse(this.pos.x, this.pos.y, this.radius, this.radius);
+  }
+
+  reset() {
+    this.pos.set(this.cr.random(this.cr.width), -50);
   }
 }

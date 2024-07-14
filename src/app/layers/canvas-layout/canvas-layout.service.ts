@@ -1,6 +1,5 @@
 import {ElementRef, inject, Injectable} from "@angular/core";
-import {CanvasRendererService} from "../../services/canvas-renderer.service";
-import p5 from "p5";
+import {CanvasRenderer, CanvasRendererService} from "../../services/canvas-renderer.service";
 import {PointCords} from "../../services/points.service";
 import {Point} from "./objects/point";
 import {Eclair} from "./objects/eclair";
@@ -53,7 +52,7 @@ export class CanvasLayoutService {
   ) {
     this.canvasRendererService.init(canvasContainer, width, height);
 
-    this.canvasRendererService.onDraw((p: p5) => {
+    this.canvasRendererService.onDraw((p: CanvasRenderer) => {
       p.clear();
 
       let currentTime = p.frameCount / 60;
@@ -61,6 +60,20 @@ export class CanvasLayoutService {
       for (let eclair of this.eclairs) {
         eclair.update(currentTime);
         eclair.display();
+
+        if (!this.mouth) continue;
+
+        const hit = p.collidePointPointVector(
+            eclair.pos,
+            this.mouth?.position,
+            10
+        );
+
+        if (hit) {
+          console.error('===================  HIT ===================')
+          eclair.reset();
+          break;
+        }
       }
 
       for (let point of this.points) {
@@ -71,6 +84,7 @@ export class CanvasLayoutService {
       if (this.mouth) {
         this.mouth.show();
       }
+
     });
 
     this.generateEclairs();

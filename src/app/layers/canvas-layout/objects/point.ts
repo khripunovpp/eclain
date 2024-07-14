@@ -1,4 +1,4 @@
-import p5 from "p5";
+import type p5 from "p5";
 
 export class Point {
   constructor(
@@ -6,9 +6,9 @@ export class Point {
       y: number,
       color: string,
   ) {
-    this.position = new p5.Vector(x, y);
-    this.velocity = new p5.Vector(0, 0);
-    this.acceleration = new p5.Vector(0, 0);
+    this.position = new window['p5'].Vector(x, y);
+    this.velocity = new window['p5'].Vector(0, 0);
+    this.acceleration = new window['p5'].Vector(0, 0);
     this.color = color;
   }
 

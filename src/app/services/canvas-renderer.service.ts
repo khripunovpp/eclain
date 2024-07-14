@@ -1,7 +1,7 @@
 import {ElementRef, Injectable} from "@angular/core";
-import p5 from "p5";
+import type p5 from "p5";
 
-export type CanvasRenderer =  p5;
+export type CanvasRenderer =  p5 | any
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class CanvasRendererService {
       width: number,
       height: number,
   ) {
-    new p5((p: p5) => {
+    new window.p5((p: p5) => {
       this._p5 = p;
       p.preload = () => {
       };

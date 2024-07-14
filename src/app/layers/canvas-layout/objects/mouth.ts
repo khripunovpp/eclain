@@ -26,14 +26,21 @@ export class Mouth {
 
   }
 
+  get position() {
+    return this.cr.createVector(
+        this.leftCornerOfMouth.x,
+        this.upperLip.y,
+    );
+  }
+
   show() {
     this.cr.stroke(255);
     this.cr.strokeWeight(2);
     this.cr.fill(255);
     this.cr.push();
     this.cr.rect(
-        this.leftCornerOfMouth.x,
-        this.upperLip.y,
+        this.position.x,
+        this.position.y,
         this.rightCornerOfMouth.x - this.leftCornerOfMouth.x,
         this.lowerLip.y - this.upperLip.y
     );
