@@ -2,6 +2,7 @@ import {inject, Injectable} from "@angular/core";
 import {tfProv} from "../providers/tf.provider";
 import {ModelService} from "./model.service";
 import {CameraService} from "./camera.service";
+import {MOBILE_WIDTH} from "../providers/responsive.provider";
 
 
 export type PointNameAsSting = keyof PredictedCords;
@@ -35,11 +36,15 @@ export interface PredictedCords {
 })
 export class MovenetModelService {
 
-  readonly cropWidth = 480;
   // canvas = signal<HTMLCanvasElement | null>(null)
   private readonly cameraService = inject(CameraService);
   private readonly tf = inject(tfProv)
+  private readonly mobile = inject(MOBILE_WIDTH)
   private readonly modelService = inject(ModelService);
+
+  get cropWidth() {
+    return this.mobile ? 240 : 480
+  };
 
   bind(
       canvasElement: HTMLCanvasElement,
@@ -53,10 +58,10 @@ export class MovenetModelService {
   }
 
   getCropPoint() {
-    const video = this.cameraService.video;
+    const video = this.cameraService.video
     if (!video) return [0, 0];
     return [
-      Math.abs(video.videoWidth - this.cropWidth) / 2,
+      Math.abs(video.clientWidth - this.cropWidth) / 2,
       0,
     ]
   }
