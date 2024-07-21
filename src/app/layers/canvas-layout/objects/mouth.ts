@@ -67,10 +67,10 @@ export class Mouth {
     this.cr.fill(255);
     this.cr.push();
     this.cr.rect(
-        this.position.x,
-        this.position.y,
-        this.width,
-        this.height,
+        0,
+        (this.cr.height - 10) / 2,
+        this.cr.width,
+        10,
     );
     this.cr.pop();
   }

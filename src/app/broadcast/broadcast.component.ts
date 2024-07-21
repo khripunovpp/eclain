@@ -15,6 +15,7 @@ import {CanvasLayoutComponent} from "../layers/canvas-layout/canvas-layout.compo
 import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
 import {PointsService} from "../services/points.service";
 import {CanvasLayoutService} from "../layers/canvas-layout/canvas-layout.service";
+import {GameService} from "../services/game.service";
 
 @Component({
   selector: 'app-broadcast',
@@ -38,6 +39,7 @@ export class BroadcastComponent
   dots = viewChild<ElementRef<HTMLElement>>('dots');
   readonly broadcastService = inject(BroadcastService);
   readonly canvasLayoutService = inject(CanvasLayoutService);
+  readonly gameService = inject(GameService);
   readonly tf = inject(tfProv)
   private readonly pointsService = inject(PointsService);
 
@@ -55,6 +57,7 @@ export class BroadcastComponent
 
   enable() {
     this.broadcastService.enable();
+    this.gameService.start();
   }
 
 

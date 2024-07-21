@@ -3,23 +3,25 @@ import {BroadcastComponent} from "../broadcast/broadcast.component";
 import {NgIf} from "@angular/common";
 import {CameraService} from "../services/camera.service";
 import {ModelService} from '../services/model.service';
+import {GameService} from "../services/game.service";
 
 @Component({
-  selector: 'app-cumera-page',
+  selector: 'page',
   standalone: true,
   imports: [
     BroadcastComponent,
     NgIf
   ],
-  templateUrl: './cumera-page.component.html',
-  styleUrl: './cumera-page.component.scss'
+  templateUrl: './page.component.html',
+  styleUrl: './page.component.scss'
 })
-export class CumeraPageComponent {
+export class PageComponent {
 
 
   private readonly cameraService = inject(CameraService);
   private readonly modelService = inject(ModelService);
   private readonly broadcastComponent = viewChild(BroadcastComponent);
+  private readonly gameService = inject(GameService);
 
   get supports() {
     return this.cameraService.supports
@@ -49,5 +51,9 @@ export class CumeraPageComponent {
 
   onButtonClick() {
     this.broadcastComponent()?.enable();
+  }
+
+  toggle() {
+    this.gameService.toggle();
   }
 }

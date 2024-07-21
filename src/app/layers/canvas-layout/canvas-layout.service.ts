@@ -4,6 +4,7 @@ import {PointCords} from "../../services/points.service";
 import {Point} from "./objects/point";
 import {Eclair} from "./objects/eclair";
 import {Mouth} from "./objects/mouth";
+import {GameService} from "../../services/game.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class CanvasLayoutService {
   points: Point[] = []
   eclairs: Eclair[] = []
   eclairsCount = 10;
+  public readonly gameService = inject(GameService)
   private mouth?: Mouth;
   private readonly canvasRendererService = inject(CanvasRendererService)
 
@@ -34,7 +36,7 @@ export class CanvasLayoutService {
   generateEclairs() {
     if (!this.renderer) return;
     for (let i = 0; i < this.eclairsCount; i++) {
-      this.eclairs.push(new Eclair(this.renderer));
+      this.eclairs.push(new Eclair(this.renderer, i));
     }
   }
 
@@ -53,6 +55,8 @@ export class CanvasLayoutService {
     this.canvasRendererService.init(canvasContainer, width, height);
 
     this.canvasRendererService.onDraw((p: CanvasRenderer) => {
+      if (this.gameService.isPaused) return;
+
       p.clear();
 
       let currentTime = p.frameCount / 60;
@@ -68,7 +72,6 @@ export class CanvasLayoutService {
         if (!this.mouth) continue;
 
         const hit = this.mouth.collidePointRect(eclair.pos)
-        console.log('hit', hit)
 
         if (hit) {
           console.error('===================  HIT ===================')

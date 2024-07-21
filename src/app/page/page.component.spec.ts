@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CumeraPageComponent } from './cumera-page.component';
+import { PageComponent } from './page.component';
 
 describe('CumeraPageComponent', () => {
-  let component: CumeraPageComponent;
-  let fixture: ComponentFixture<CumeraPageComponent>;
+  let component: PageComponent;
+  let fixture: ComponentFixture<PageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CumeraPageComponent]
+      imports: [PageComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CumeraPageComponent);
+    fixture = TestBed.createComponent(PageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
