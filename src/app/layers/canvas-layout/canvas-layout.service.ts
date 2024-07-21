@@ -57,17 +57,18 @@ export class CanvasLayoutService {
 
       let currentTime = p.frameCount / 60;
 
+      if (this.mouth) {
+        this.mouth.show();
+      }
+
       for (let eclair of this.eclairs) {
         eclair.update(currentTime);
         eclair.display();
 
         if (!this.mouth) continue;
 
-        const hit = p.collidePointPointVector(
-            eclair.pos,
-            this.mouth?.position,
-            10
-        );
+        const hit = this.mouth.collidePointRect(eclair.pos)
+        console.log('hit', hit)
 
         if (hit) {
           console.error('===================  HIT ===================')
@@ -79,10 +80,6 @@ export class CanvasLayoutService {
       for (let point of this.points) {
         point.show(p)
         point.update(p)
-      }
-
-      if (this.mouth) {
-        this.mouth.show();
       }
 
     });
