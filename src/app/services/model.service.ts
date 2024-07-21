@@ -9,13 +9,14 @@ export class ModelService {
   model = signal<any | null>(null)
   status = signal<string | null>(null)
   tf = inject(tfProv)
-  MODEL_PATH = 'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4';
+  MODEL_PATH_REMOTE = 'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4';
+  MODEL_PATH_LOCAL = '/';
 
   async load() {
     if (this.tf.version.tfjs) {
       this.status.set('Loaded TensorFlow.js - version: ' + this.tf.version.tfjs);
 
-      this.model.set(await this.tf.loadGraphModel(this.MODEL_PATH, {fromTFHub: true}));
+      this.model.set(await this.tf.loadGraphModel(this.MODEL_PATH_LOCAL, {fromTFHub: true}));
       this.status.set('Model loaded');
     }
   }
