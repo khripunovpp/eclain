@@ -8,9 +8,17 @@ export class LifeService {
   constructor() {
   }
 
-  private readonly maxLife = 10;
+  private readonly maxLife = 1;
 
   readonly life = signal(this.maxLife)
+
+  get alive() {
+    return this.life() > 0;
+  }
+
+  get dead() {
+    return this.life() <= 0;
+  }
 
   setLife(
       life: number,

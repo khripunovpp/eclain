@@ -1,4 +1,4 @@
-import {inject, Injectable, OnInit} from "@angular/core";
+import {inject, Injectable, OnInit, signal} from "@angular/core";
 import {createActor, createMachine} from 'xstate';
 import {Point} from "../layers/canvas-layout/objects/point";
 import {PointCords} from "./points.service";
@@ -7,15 +7,19 @@ import {FaceService} from "./face.service";
 import {EclairsService} from "./eclairs.service";
 import {ScoreService} from "./score.service";
 import {LifeService} from "./life.service";
+import p5 from "p5";
+import {Eclair} from "../layers/canvas-layout/objects/eclair";
 
 enum GameStates {
   Paused = 'Paused',
   Playing = 'Playing',
+  Failed = 'Failed',
 }
 
 enum GameEvents {
   Toggle = 'toggle',
   Start = 'start',
+  FailGame = 'failGame',
 }
 
 @Injectable({
@@ -25,24 +29,23 @@ export class GameService
     implements OnInit {
 
   constructor() {
-
     this.actor.start();
-
-    console.log('actor', this.actor.getSnapshot().value);
-
     this.actor.subscribe((snapshot) => {
-      console.log('Value:', snapshot.value);
+      this.gameState.set(snapshot.value as GameStates);
     });
   }
 
   points: Point[] = []
-  gameMachine = createMachine({
+  private _initialState = GameStates.Paused;
+  gameState = signal(this._initialState);
+  private readonly gameMachine = createMachine({
     id: 'game',
-    initial: GameStates.Paused,
+    initial: this._initialState,
     states: {
       [GameStates.Playing]: {
         on: {
           [GameEvents.Toggle]: GameStates.Paused,
+          [GameEvents.FailGame]: GameStates.Failed,
         },
       },
       [GameStates.Paused]: {
@@ -50,10 +53,15 @@ export class GameService
           [GameEvents.Toggle]: GameStates.Playing,
           [GameEvents.Start]: GameStates.Playing,
         },
-      }
+      },
+      [GameStates.Failed]: {
+        on: {
+          [GameEvents.FailGame]: GameStates.Failed,
+        },
+      },
     },
   })
-  actor = createActor(this.gameMachine)
+  private readonly actor = createActor(this.gameMachine)
   private readonly canvasRendererService = inject(CanvasRendererService)
   private readonly faceService = inject(FaceService);
   private readonly eclairsService = inject(EclairsService);
@@ -64,8 +72,20 @@ export class GameService
     return this.actor.getSnapshot().value == GameStates.Paused;
   }
 
+  get isGameOver() {
+    return this.actor.getSnapshot().value == GameStates.Failed;
+  }
+
   get renderer() {
     return this.canvasRendererService.renderer;
+  }
+
+  get playTheGame() {
+    return !this.isPaused && !this.isGameOver;
+  }
+
+  get canEat() {
+    return this.lifeService.alive;
   }
 
   ngOnInit() {
@@ -112,6 +132,12 @@ export class GameService
     });
   }
 
+  failGame() {
+    this.actor.send({
+      type: 'failGame',
+    });
+  }
+
   update() {
     this.renderer.clear();
 
@@ -122,21 +148,21 @@ export class GameService
     }
 
     for (let eclair of this.eclairsService.eclairs) {
-      if (!this.isPaused) {
-        if (eclair.pos.y > this.renderer.height) {
-          this.eclairsService.resetEclair(eclair);
-          this.lifeService.decrement();
+      if (this.playTheGame) {
+        if (this._eclairOutOfScreen(eclair.pos)) {
+          this._resetEclair(eclair);
+
+          if (this.lifeService.dead) {
+            this.failGame();
+            break;
+          }
         } else {
           eclair.update(currentTime);
         }
       }
       eclair.display();
 
-      if (!this.faceService.mouth) continue;
-
-      const hit = this.faceService.mouth.collidePointRect(eclair.pos)
-
-      if (hit) {
+      if (this.canEat && this.faceService.mouth?.collidePointRect(eclair.pos)) {
         this.eclairsService.hitEclair(eclair);
         this.scoreService.increment();
         break;
@@ -148,4 +174,18 @@ export class GameService
       point.update(this.renderer)
     }
   }
+
+  private _resetEclair(
+      eclair: Eclair,
+  ) {
+    this.eclairsService.resetEclair(eclair);
+    this.lifeService.decrement();
+  }
+
+  private _eclairOutOfScreen(
+      position: p5.Vector,
+  ) {
+    return position.y > this.renderer.height;
+  }
+
 }
