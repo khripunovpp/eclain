@@ -25,4 +25,8 @@ export class ScoreService {
   decrement(){
     this.score.update((score) => score - 1);
   }
+
+  addScore(score: number){
+    this.score.update((current) => current + score);
+  }
 }

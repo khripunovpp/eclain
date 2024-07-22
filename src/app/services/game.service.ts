@@ -156,8 +156,6 @@ export class GameService
             this.failGame();
             break;
           }
-        } else if (this._eclairOutOfTopScreen(eclair.pos)) {
-          eclair.setOutOfScreen();
         } else {
           eclair.update(currentTime);
         }
@@ -166,7 +164,11 @@ export class GameService
 
       if (this.canEat && this.faceService.mouth?.collidePointRect(eclair.pos)) {
         this.eclairsService.hitEclair(eclair);
-        this.scoreService.increment();
+        if (eclair.golden) {
+          this.scoreService.addScore(5)
+        } else {
+          this.scoreService.increment();
+        }
         break;
       }
     }

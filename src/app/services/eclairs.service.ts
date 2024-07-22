@@ -1,4 +1,4 @@
-import {inject, Injectable} from "@angular/core";
+import {computed, inject, Injectable, signal} from "@angular/core";
 import {Eclair} from "../layers/canvas-layout/objects/eclair";
 import {CanvasRendererService} from "./canvas-renderer.service";
 
@@ -11,19 +11,26 @@ export class EclairsService {
 
   eclairs: Eclair[] = []
   eclairsCount = 5;
+  eclairsShowed = signal(0);
   private readonly cr = inject(CanvasRendererService);
+  eclairsOnScreen = computed(() => {
+    return this.eclairs.filter(eclair => {
+      return eclair.pos.y < this.cr.renderer.height
+          && eclair.pos.y > 0
+    });
+  });
   private _img: any;
   private _lastEclair?: Eclair;
 
   async createEclairs() {
     try {
-      this._img = await this._loadPic();
       for (let i = 0; i < this.eclairsCount; i++) {
         this._lastEclair = new Eclair(this.cr.renderer, i, this._getPositionByLastEclair(this._lastEclair));
-        this._lastEclair.setImage(this._img);
+        this._lastEclair.setImage();
         // this._lastEclair.setGolden();
         this.eclairs.push(this._lastEclair);
       }
+      this.eclairsShowed.set(this.eclairsCount);
     } catch (e) {
       console.error('Error loading image', e);
     }
@@ -32,7 +39,13 @@ export class EclairsService {
   resetEclair(eclair: Eclair) {
     eclair.reset(this._getPositionByLastEclair(this._lastEclair));
     eclair.setOutOfScreen();
+    const goldenVal = this.cr.renderer.random();
+    const golden = !this._lastEclair?.golden && goldenVal <= 0.5;
+    eclair.setGolden(golden);
+
+    console.log('golden', eclair.golden, goldenVal)
     this._lastEclair = eclair;
+    this.eclairsShowed.update((count) => count + 1);
   }
 
   hitEclair(eclair: Eclair) {
@@ -52,7 +65,4 @@ export class EclairsService {
     );
   }
 
-  private _loadPic() {
-    return new Promise((resolve, reject) => this.cr.renderer.loadImage('./eclair.png', resolve, reject));
-  }
 }

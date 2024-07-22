@@ -24,10 +24,11 @@ export class Eclair {
     this.actor.subscribe((snapshot) => {
       this.state.set(snapshot.value as EclairState);
     });
+
   }
 
   velocity = this.cr.createVector(0, 1);
-  _img: any;
+  _goldenImage: any;
   imgWidth = 20;
   imgHeight = this.imgWidth;
   golden = false;
@@ -51,9 +52,15 @@ export class Eclair {
   });
   private readonly actor = createActor(this.eclairMachine)
 
+  _img: any;
+
+  get img() {
+    return this.golden ? this._goldenImage : this._img;
+  }
+
   reset(
       pos: p5.Vector,
-  ){
+  ) {
     this.pos.set(pos);
   }
 
@@ -63,18 +70,37 @@ export class Eclair {
     this.pos.add(this.velocity);
   }
 
-  setGolden() {
-    this.golden = true;
+  setGolden(
+      status: boolean = true,
+  ) {
+    this.golden = status;
   }
 
-  setImage(img: any) {
-    this._img = img;
-    this._img.resize(this.imgWidth, this.imgHeight);
+  setImage() {
+    this._loadPic().then((img: any) => {
+      this._img = img;
+      this._img.resize(this.imgWidth, this.imgHeight);
+    });
+
+    this._loadPic().then((img: any) => {
+      this._goldenImage = img;
+      this._goldenImage.resize(this.imgWidth, this.imgHeight);
+      this._goldenImage.filter(this.cr.INVERT);
+    });
+
   }
 
   display() {
     this.show();
-    this.cr.image(this._img, this.pos.x - this.imgWidth / 2, this.pos.y - this.imgHeight / 2);
+    if (!this.img) {
+      return;
+    }
+    this.cr.image(
+        this.img,
+        this.pos.x
+        - this.imgWidth / 2,
+        this.pos.y - this.imgHeight / 2
+    );
 
     // // set text inside the elipse with cords and id
     // this.cr.textSize(12);
@@ -94,5 +120,9 @@ export class Eclair {
     this.actor.send({
       type: EclairEvents.Show,
     });
+  }
+
+  private _loadPic() {
+    return new Promise((resolve, reject) => this.cr.loadImage('./eclair.png', resolve, reject));
   }
 }

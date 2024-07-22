@@ -1,5 +1,6 @@
 import {ElementRef, Injectable} from "@angular/core";
 import type p5 from "p5";
+import {keys} from "lodash";
 
 export type CanvasRenderer = p5 | any
 

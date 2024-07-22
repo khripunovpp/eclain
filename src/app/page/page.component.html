@@ -12,7 +12,8 @@
 
   <p style="color: #fff">Score {{scoreService.score()}}</p>
   <p style="color: #fff">Life {{lifeService.life()}}</p>
-  <p style="color: #fff">Alive {{!gameService.isGameOver}}
+  <p style="color: #fff">Alive {{!gameService.isGameOver}}</p>
+  <p style="color: #fff">eclairsOnScreen {{eclairsService.eclairsOnScreen().length}} / {{eclairsService.eclairsShowed()}}</p>
 
   <app-broadcast></app-broadcast>
 
