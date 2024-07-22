@@ -124,7 +124,7 @@ export class GameService
     for (let eclair of this.eclairsService.eclairs) {
       if (!this.isPaused) {
         if (eclair.pos.y > this.renderer.height) {
-          eclair.reset();
+          this.eclairsService.resetEclair(eclair);
           this.lifeService.decrement();
         } else {
           eclair.update(currentTime);
@@ -137,7 +137,7 @@ export class GameService
       const hit = this.faceService.mouth.collidePointRect(eclair.pos)
 
       if (hit) {
-        eclair.reset();
+        this.eclairsService.hitEclair(eclair);
         this.scoreService.increment();
         break;
       }
