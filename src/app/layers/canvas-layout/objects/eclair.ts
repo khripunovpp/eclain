@@ -18,9 +18,6 @@ export class Eclair {
   ) {
     this.pos.add(this.velocity);
 
-    if (this.pos.y > this.cr.height) {
-      this.reset();
-    }
   }
 
   setImage(img: any) {

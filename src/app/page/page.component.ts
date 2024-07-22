@@ -5,6 +5,7 @@ import {CameraService} from "../services/camera.service";
 import {ModelService} from '../services/model.service';
 import {GameService} from "../services/game.service";
 import {ScoreService} from "../services/score.service";
+import {LifeService} from "../services/life.service";
 
 @Component({
   selector: 'page',
@@ -24,6 +25,7 @@ export class PageComponent {
   private readonly broadcastComponent = viewChild(BroadcastComponent);
   private readonly gameService = inject(GameService);
   readonly scoreService = inject(ScoreService);
+  readonly lifeService = inject(LifeService);
 
 
   get supports() {
