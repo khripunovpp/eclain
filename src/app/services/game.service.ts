@@ -149,13 +149,15 @@ export class GameService
 
     for (let eclair of this.eclairsService.eclairs) {
       if (this.playTheGame) {
-        if (this._eclairOutOfScreen(eclair.pos)) {
+        if (this._eclairOutOfBottomScreen(eclair.pos)) {
           this._resetEclair(eclair);
 
           if (this.lifeService.dead) {
             this.failGame();
             break;
           }
+        } else if (this._eclairOutOfTopScreen(eclair.pos)) {
+          eclair.setOutOfScreen();
         } else {
           eclair.update(currentTime);
         }
@@ -182,10 +184,15 @@ export class GameService
     this.lifeService.decrement();
   }
 
-  private _eclairOutOfScreen(
+  private _eclairOutOfBottomScreen(
       position: p5.Vector,
   ) {
-    return position.y > this.renderer.height;
+    return position.y > this.renderer.height
   }
 
+  private _eclairOutOfTopScreen(
+      position: p5.Vector,
+  ) {
+    return position.y < 0
+  }
 }

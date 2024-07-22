@@ -21,6 +21,7 @@ export class EclairsService {
       for (let i = 0; i < this.eclairsCount; i++) {
         this._lastEclair = new Eclair(this.cr.renderer, i, this._getPositionByLastEclair(this._lastEclair));
         this._lastEclair.setImage(this._img);
+        // this._lastEclair.setGolden();
         this.eclairs.push(this._lastEclair);
       }
     } catch (e) {
@@ -29,7 +30,8 @@ export class EclairsService {
   }
 
   resetEclair(eclair: Eclair) {
-    eclair.pos.set(this._getPositionByLastEclair(this._lastEclair));
+    eclair.reset(this._getPositionByLastEclair(this._lastEclair));
+    eclair.setOutOfScreen();
     this._lastEclair = eclair;
   }
 
