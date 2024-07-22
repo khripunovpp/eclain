@@ -146,12 +146,13 @@ export class MovenetModelService {
   calculateAdditionalPoints(
       cords: Partial<PredictedCords>,
   ) {
+    if (!cords) return;
     const leftEye = cords.leftEye; // Индексы точек глаз из модели
     const rightEye = cords.rightEye;
     const nose = cords.nose;
 
     if (!leftEye || !rightEye || !nose) {
-      return;
+      return
     }
 
     const coeff = 0.1;

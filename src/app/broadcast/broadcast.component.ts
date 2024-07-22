@@ -50,8 +50,8 @@ export class BroadcastComponent
     if (!this.videoLayer?.video?.nativeElement) return;
     this.broadcastService.load(this.videoLayer?.video!.nativeElement);
     this.broadcastService.onPredict.subscribe((dots) => {
-      this.canvasLayoutService?.addPoints(dots);
-      this.canvasLayoutService?.addMouth(dots);
+      this.gameService?.addPoints(dots);
+      this.gameService?.addMouth(dots);
     });
   }
 

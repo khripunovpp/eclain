@@ -19,5 +19,4 @@ export class CanvasLayoutComponent
   ngAfterViewInit() {
     this.canvasLayoutService.init(this.canvasContainer, this.width, this.height);
   }
-
 }
