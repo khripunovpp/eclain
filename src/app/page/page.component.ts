@@ -4,6 +4,7 @@ import {NgIf} from "@angular/common";
 import {CameraService} from "../services/camera.service";
 import {ModelService} from '../services/model.service';
 import {GameService} from "../services/game.service";
+import {ScoreService} from "../services/score.service";
 
 @Component({
   selector: 'page',
@@ -22,6 +23,8 @@ export class PageComponent {
   private readonly modelService = inject(ModelService);
   private readonly broadcastComponent = viewChild(BroadcastComponent);
   private readonly gameService = inject(GameService);
+  readonly scoreService = inject(ScoreService);
+
 
   get supports() {
     return this.cameraService.supports

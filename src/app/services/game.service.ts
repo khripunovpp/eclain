@@ -5,6 +5,7 @@ import {PointCords} from "./points.service";
 import {CanvasRendererService} from "./canvas-renderer.service";
 import {FaceService} from "./face.service";
 import {EclairsService} from "./eclairs.service";
+import {ScoreService} from "./score.service";
 
 enum GameStates {
   Paused = 'Paused',
@@ -55,6 +56,7 @@ export class GameService
   private readonly canvasRendererService = inject(CanvasRendererService)
   private readonly faceService = inject(FaceService);
   private readonly eclairsService = inject(EclairsService);
+  private readonly scoreService = inject(ScoreService);
 
   get isPaused() {
     return this.actor.getSnapshot().value == GameStates.Paused;
@@ -129,6 +131,7 @@ export class GameService
 
       if (hit) {
         eclair.reset();
+        this.scoreService.increment();
         break;
       }
     }
