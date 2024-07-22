@@ -18,20 +18,16 @@ import {LifeService} from "../services/life.service";
   styleUrl: './page.component.scss'
 })
 export class PageComponent {
-
-
-  private readonly cameraService = inject(CameraService);
-  private readonly modelService = inject(ModelService);
-  private readonly broadcastComponent = viewChild(BroadcastComponent);
-  private readonly gameService = inject(GameService);
+  readonly cameraService = inject(CameraService);
+  readonly modelService = inject(ModelService);
+  readonly gameService = inject(GameService);
   readonly scoreService = inject(ScoreService);
   readonly lifeService = inject(LifeService);
-
+  private readonly broadcastComponent = viewChild(BroadcastComponent);
 
   get supports() {
     return this.cameraService.supports
         && (this.websiteOnSSL || this.localhost);
-
   }
 
   get websiteOnSSL() {
