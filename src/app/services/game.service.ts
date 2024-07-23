@@ -11,6 +11,7 @@ import {Eclair} from "../objects/eclair";
 import {BodyPointsService} from "./body-points.service";
 import {LocalStorageService} from "./local-storage.service";
 import {AssetsService} from "./assets.service";
+import {EnemiesService} from "./enemies.service";
 
 export enum GameStates {
   Paused = 'Paused',
@@ -88,6 +89,7 @@ export class GameService
   private readonly canvasRendererService = inject(CanvasRendererService)
   private readonly faceService = inject(FaceService);
   private readonly eclairsService = inject(EclairsService);
+  private readonly enemiesService = inject(EnemiesService);
   private readonly scoreService = inject(ScoreService);
   private readonly lifeService = inject(LifeService);
   private readonly bodyPointsService = inject(BodyPointsService);
@@ -127,6 +129,7 @@ export class GameService
   async init() {
     await this.assetsService.loadAssets();
     await this.eclairsService.createEclairs();
+    await this.enemiesService.createEnemies();
   }
 
   addPoints(
@@ -174,6 +177,8 @@ export class GameService
 
     for (let eclair of this.eclairsService.eclairs) {
       if (this.playTheGame) {
+        this.enemiesService.update();
+
         if (this._eclairOutOfBottomScreen(eclair.pos)) {
           this._resetEclair(eclair);
 
