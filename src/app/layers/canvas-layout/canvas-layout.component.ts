@@ -1,6 +1,5 @@
 import {AfterViewInit, Component, ElementRef, inject, Input, ViewChild} from '@angular/core';
-import {CanvasLayoutService} from "./canvas-layout.service";
-import p5 from "p5";
+import {CanvasLayerService} from "../../services/canvas-layer.service";
 
 @Component({
   selector: 'app-canvas-layout',
@@ -14,7 +13,7 @@ export class CanvasLayoutComponent
   @ViewChild('canvasContainer') canvasContainer!: ElementRef;
   @Input({required: true}) width!: number
   @Input({required: true}) height!: number
-  private readonly canvasLayoutService = inject(CanvasLayoutService)
+  private readonly canvasLayoutService = inject(CanvasLayerService)
 
   ngAfterViewInit() {
     this.canvasLayoutService.init(this.canvasContainer, this.width, this.height);

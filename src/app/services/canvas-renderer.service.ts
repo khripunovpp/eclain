@@ -1,6 +1,5 @@
-import {ElementRef, Injectable} from "@angular/core";
+import {ElementRef, inject, Injectable, NgZone} from "@angular/core";
 import type p5 from "p5";
-import {keys} from "lodash";
 
 export type CanvasRenderer = p5 | any
 
@@ -12,6 +11,8 @@ export class CanvasRendererService {
   private _onDrawCallback?: (p: p5) => void;
   private _onSetupCallback?: (p: p5) => void;
 
+  private readonly ngZone = inject(NgZone)
+
   get renderer() {
     return this._p5;
   }
@@ -22,23 +23,25 @@ export class CanvasRendererService {
       height: number,
   ) {
     new window.p5((p: CanvasRenderer) => {
-      this._p5 = p;
-      p.preload = () => {
-      };
+      this.ngZone.runOutsideAngular(() => {
+        this._p5 = p;
+        p.preload = () => {
+        };
 
-      p.setup = () => {
-        p.createCanvas(width, height);
+        p.setup = () => {
+          p.createCanvas(width, height);
 
-        this._onSetupCallback?.(p);
-      };
+          this._onSetupCallback?.(p);
+        };
 
-      p.windowResized = () => {
-        p.resizeCanvas(width, height);
-      };
+        p.windowResized = () => {
+          p.resizeCanvas(width, height);
+        };
 
-      p.draw = () => {
-        this._onDrawCallback?.(p);
-      };
+        p.draw = () => {
+          this._onDrawCallback?.(p);
+        };
+      });
     }, canvasContainer.nativeElement);
   }
 

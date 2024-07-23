@@ -1,5 +1,5 @@
-import {CanvasRenderer} from "../../../services/canvas-renderer.service";
-import {PointCords} from "../../../services/points.service";
+import {CanvasRenderer} from "../services/canvas-renderer.service";
+import {PointCords} from "../services/points.service";
 import p5 from "p5";
 
 export class Mouth {

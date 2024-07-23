@@ -1,7 +1,8 @@
 import {inject, Injectable} from "@angular/core";
 import {PointsService} from "./points.service";
 import {CanvasRendererService} from "./canvas-renderer.service";
-import {Mouth} from "../layers/canvas-layout/objects/mouth";
+import {Mouth} from "../objects/mouth";
+import {IndicatorsService} from "./indicators.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class FaceService {
   mouth?: Mouth;
   private readonly pointsService = inject(PointsService);
   private readonly cr = inject(CanvasRendererService);
+  private readonly indicatorsService = inject(IndicatorsService)
 
   get faceCenter() {
     return {
@@ -25,11 +27,10 @@ export class FaceService {
     return this.pointsService.dotsCords['leftEye'].y - this.pointsService.dotsCords['rightEye'].y;
   }
 
-  createMouth() {
-    return new Mouth(this.cr.renderer, this.pointsService.dotsCords);
-  }
-
   update() {
+    this.mouth = new Mouth(this.cr.renderer, this.pointsService.dotsCords);
+    if (this.indicatorsService.hidden) return
+    this.mouth.show();
     this.cr.renderer.ellipse(
         this.faceCenter.x,
         this.faceCenter.y,
@@ -37,9 +38,4 @@ export class FaceService {
         10,
     );
   }
-
-  show() {
-    this.mouth = this.createMouth();
-  }
-
 }

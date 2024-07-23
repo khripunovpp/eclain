@@ -1,12 +1,12 @@
 import {ElementRef, inject, Injectable} from "@angular/core";
-import {CanvasRenderer, CanvasRendererService} from "../../services/canvas-renderer.service";
-import {GameService} from "../../services/game.service";
-import {FaceService} from "../../services/face.service";
+import {CanvasRenderer, CanvasRendererService} from "./canvas-renderer.service";
+import {GameService} from "./game.service";
+import {FaceService} from "./face.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class CanvasLayoutService {
+export class CanvasLayerService {
   constructor() {
   }
 
@@ -24,7 +24,6 @@ export class CanvasLayoutService {
 
       this.canvasRendererService.onDraw((p: CanvasRenderer) => {
         this.gameService.update();
-        this.faceService.show();
         this.faceService.update();
       });
     });

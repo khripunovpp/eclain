@@ -10,12 +10,11 @@ import {
 } from '@angular/core';
 import {JsonPipe, NgIf} from "@angular/common";
 import {tfProv} from "../providers/tf.provider";
-import {BroadcastService} from "./broadcast.service";
+import {BroadcastService} from "../services/broadcast.service";
 import {CanvasLayoutComponent} from "../layers/canvas-layout/canvas-layout.component";
 import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
-import {PointsService} from "../services/points.service";
-import {CanvasLayoutService} from "../layers/canvas-layout/canvas-layout.service";
 import {GameService} from "../services/game.service";
+import {MOBILE_WIDTH} from "../providers/responsive.provider";
 
 @Component({
   selector: 'app-broadcast',
@@ -38,11 +37,8 @@ export class BroadcastComponent
   }) canvasLayer: CanvasLayoutComponent | undefined;
   dots = viewChild<ElementRef<HTMLElement>>('dots');
   readonly broadcastService = inject(BroadcastService);
-  readonly canvasLayoutService = inject(CanvasLayoutService);
   readonly gameService = inject(GameService);
   readonly tf = inject(tfProv)
-  private readonly pointsService = inject(PointsService);
-
   ngOnInit() {
   }
 
@@ -51,7 +47,6 @@ export class BroadcastComponent
     this.broadcastService.load(this.videoLayer?.video!.nativeElement);
     this.broadcastService.onPredict.subscribe((dots) => {
       this.gameService?.addPoints(dots);
-      this.gameService?.addMouth(dots);
     });
   }
 

@@ -43,7 +43,7 @@ export class MovenetModelService {
   private readonly modelService = inject(ModelService);
 
   get cropWidth() {
-    return this.mobile ? 240 : 480
+    return this.cameraService.video?.clientHeight ?? 0;
   };
 
   bind(

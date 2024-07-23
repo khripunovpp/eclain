@@ -1,4 +1,4 @@
-<app-video-layer [height]="broadcastService.windowWidth"></app-video-layer>
+<app-video-layer [width]="broadcastService.videoWidth"></app-video-layer>
 
 <app-canvas-layout *ngIf="broadcastService.streamStarted()"
                    [height]="broadcastService.windowWidth"
@@ -13,6 +13,5 @@
        [style.top.px]="broadcastService.windowCords.y"
        [style.width.px]="broadcastService.windowWidth"
        class="window">
-
   </div>
 </div>

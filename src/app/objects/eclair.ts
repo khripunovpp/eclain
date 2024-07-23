@@ -1,4 +1,4 @@
-import {CanvasRenderer} from "../../../services/canvas-renderer.service";
+import {CanvasRenderer} from "../services/canvas-renderer.service";
 import p5 from "p5";
 import {createActor, createMachine} from 'xstate';
 import {signal} from "@angular/core";

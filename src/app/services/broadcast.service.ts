@@ -1,9 +1,10 @@
-import {computed, EventEmitter, inject, Injectable, NgZone, Output} from "@angular/core";
-import {CameraService} from "../services/camera.service";
-import {ModelService} from "../services/model.service";
-import {MovenetModelService, PointNameAsSting, PredictedCords} from "../services/movenet-model.service";
+import {EventEmitter, inject, Injectable, NgZone, Output} from "@angular/core";
+import {CameraService} from "./camera.service";
+import {ModelService} from "./model.service";
+import {MovenetModelService, PointNameAsSting, PredictedCords} from "./movenet-model.service";
 import _ from 'lodash';
-import {PointCords, PointsService} from "../services/points.service";
+import {PointCords, PointsService} from "./points.service";
+import {MOBILE_WIDTH} from "../providers/responsive.provider";
 
 
 @Injectable({
@@ -15,15 +16,12 @@ export class BroadcastService {
 
   dotsRefs: Record<string, any> = {}
   @Output() readonly onPredict = new EventEmitter<PointCords>();
+  private readonly mobile = inject(MOBILE_WIDTH)
   private readonly _ngZone = inject(NgZone);
   private readonly cameraService = inject(CameraService);
   readonly streamStarted = this.cameraService.streamStarted
   private readonly pointsService = inject(PointsService);
   private readonly modelService = inject(ModelService);
-  readonly canEnableCam = computed(() => {
-    return this.cameraService.supports && this.modelService.model();
-  });
-  readonly modelReady = this.modelService.model
   private readonly movenetModelService = inject(MovenetModelService);
   private readonly pointWidth = 4;
   private readonly confidenceThreshold = 0.4;
@@ -33,6 +31,21 @@ export class BroadcastService {
       this.predictWebcam();
     });
   }, this.predictDelay);
+
+  private readonly maxWidthMobile = 320;
+  private readonly maxWidthDesktop = 640;
+
+  get videoWidth() {
+    const actualWidth = window.innerWidth;
+    if (this.mobile) {
+      if (actualWidth > this.maxWidthMobile) {
+        return this.maxWidthMobile
+      } else {
+        return actualWidth
+      }
+    }
+    return this.maxWidthDesktop;
+  };
 
   get cropPoints() {
     const [x, y] = this.movenetModelService.getCropPoint();
@@ -171,9 +184,11 @@ export class BroadcastService {
     });
   }
 
-  private async _update(cords: any) {
-    await this._drawPoints(cords)
-    this.onPredict.emit(this.pointsService.dotsCords);
+  private _update(cords: any) {
+    this._ngZone.runOutsideAngular(() => {
+      this._drawPoints(cords)
+          .then(() => this.onPredict.emit(this.pointsService.dotsCords));
+    });
   }
 
   private _enableCam() {

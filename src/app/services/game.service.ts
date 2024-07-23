@@ -1,6 +1,5 @@
 import {inject, Injectable, OnInit, signal} from "@angular/core";
 import {createActor, createMachine} from 'xstate';
-import {Point} from "../layers/canvas-layout/objects/point";
 import {PointCords} from "./points.service";
 import {CanvasRendererService} from "./canvas-renderer.service";
 import {FaceService} from "./face.service";
@@ -8,7 +7,8 @@ import {EclairsService} from "./eclairs.service";
 import {ScoreService} from "./score.service";
 import {LifeService} from "./life.service";
 import p5 from "p5";
-import {Eclair} from "../layers/canvas-layout/objects/eclair";
+import {Eclair} from "../objects/eclair";
+import {BodyPointsService} from "./body-points.service";
 
 enum GameStates {
   Paused = 'Paused',
@@ -35,7 +35,6 @@ export class GameService
     });
   }
 
-  points: Point[] = []
   private _initialState = GameStates.Paused;
   gameState = signal(this._initialState);
   private readonly gameMachine = createMachine({
@@ -67,6 +66,7 @@ export class GameService
   private readonly eclairsService = inject(EclairsService);
   private readonly scoreService = inject(ScoreService);
   private readonly lifeService = inject(LifeService);
+  private readonly bodyPointsService = inject(BodyPointsService);
 
   get isPaused() {
     return this.actor.getSnapshot().value == GameStates.Paused;
@@ -98,22 +98,12 @@ export class GameService
   addPoints(
       cords: PointCords
   ) {
-    this.points = []
-    for (let [key, value] of Object.entries(cords)) {
-      this.points.push(new Point(value.x, value.y, value.color))
-    }
+    this.bodyPointsService.createPoints(cords);
   }
 
   generateEclairs() {
     if (!this.renderer) return;
     return this.eclairsService.createEclairs();
-  }
-
-  addMouth(
-      cords: PointCords,
-  ) {
-    if (!this.renderer) return;
-    this.faceService.createMouth();
   }
 
   toggle() {
@@ -143,9 +133,7 @@ export class GameService
 
     let currentTime = this.renderer.frameCount / 60;
 
-    if (this.faceService.mouth) {
-      this.faceService.mouth.show();
-    }
+    this.faceService.update();
 
     for (let eclair of this.eclairsService.eclairs) {
       if (this.playTheGame) {
@@ -173,10 +161,7 @@ export class GameService
       }
     }
 
-    for (let point of this.points) {
-      point.show(this.renderer)
-      point.update(this.renderer)
-    }
+    this.bodyPointsService.update();
   }
 
   private _resetEclair(

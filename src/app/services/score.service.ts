@@ -18,15 +18,15 @@ export class ScoreService {
     return this.score();
   }
 
-  increment(){
+  increment() {
     this.score.update((score) => score + 1);
   }
 
-  decrement(){
+  decrement() {
     this.score.update((score) => score - 1);
   }
 
-  addScore(score: number){
+  addScore(score: number) {
     this.score.update((current) => current + score);
   }
 }

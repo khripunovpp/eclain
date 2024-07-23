@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {CircularQueue} from "../structures/circular-queue";
 import {Helpers} from "../helpers/helpers";
-import {PointNameAsSting, PredictedCords} from "./movenet-model.service";
+import {PointNameAsSting} from "./movenet-model.service";
 
 export type PointCords = Record<PointNameAsSting, {
   x: number,

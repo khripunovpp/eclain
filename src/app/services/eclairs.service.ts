@@ -1,5 +1,5 @@
 import {computed, inject, Injectable, signal} from "@angular/core";
-import {Eclair} from "../layers/canvas-layout/objects/eclair";
+import {Eclair} from "../objects/eclair";
 import {CanvasRendererService} from "./canvas-renderer.service";
 
 @Injectable({
@@ -19,7 +19,6 @@ export class EclairsService {
           && eclair.pos.y > 0
     });
   });
-  private _img: any;
   private _lastEclair?: Eclair;
 
   async createEclairs() {
