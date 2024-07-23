@@ -14,4 +14,15 @@
     margin: 0 0 10px;
     font-size: 32px;
   }
+
+  button {
+    appearance: none;
+    border: 0;
+    background-color: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 20px;
+    text-decoration: underline;
+    margin-top: 15px;
+  }
 }
