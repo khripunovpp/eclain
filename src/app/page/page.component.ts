@@ -9,7 +9,7 @@ import {LifeService} from "../services/life.service";
 import {EclairsService} from "../services/eclairs.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 
-const animationsDuration = 250;
+const animationsDuration = '250ms ease-in-out';
 
 @Component({
   selector: 'page',
