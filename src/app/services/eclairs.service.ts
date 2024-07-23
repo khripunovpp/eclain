@@ -21,12 +21,13 @@ export class EclairsService {
   });
   private _lastEclair?: Eclair;
 
-  async createEclairs() {
+  async createEclairs(
+      img: any
+  ) {
     try {
       for (let i = 0; i < this.eclairsCount; i++) {
         this._lastEclair = new Eclair(this.cr.renderer, i, this._getPositionByLastEclair(this._lastEclair));
-        this._lastEclair.setImage();
-        // this._lastEclair.setGolden();
+        this._lastEclair.setImage(img);
         this.eclairs.push(this._lastEclair);
       }
       this.eclairsShowed.set(this.eclairsCount);

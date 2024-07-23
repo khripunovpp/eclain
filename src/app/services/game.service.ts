@@ -91,8 +91,9 @@ export class GameService
   ngOnInit() {
   }
 
-  init() {
-    return this.generateEclairs();
+  async init() {
+    const img = await this.loadAssets()
+    await this.eclairsService.createEclairs(img);
   }
 
   addPoints(
@@ -101,15 +102,14 @@ export class GameService
     this.bodyPointsService.createPoints(cords);
   }
 
-  generateEclairs() {
-    if (!this.renderer) return;
-    return this.eclairsService.createEclairs();
-  }
-
   toggle() {
     this.actor.send({
       type: 'toggle',
     });
+  }
+
+  loadAssets() {
+    return new Promise((resolve, reject) => this.canvasRendererService.renderer.loadImage('./eclair.png', resolve, reject));
   }
 
   pause() {

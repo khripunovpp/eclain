@@ -76,18 +76,12 @@ export class Eclair {
     this.golden = status;
   }
 
-  setImage() {
-    this._loadPic().then((img: any) => {
-      this._img = img;
-      this._img.resize(this.imgWidth, this.imgHeight);
-    });
+  setImage(img: any) {
+    this._img = img;
+    this._img.resize(this.imgWidth, this.imgHeight);
 
-    this._loadPic().then((img: any) => {
-      this._goldenImage = img;
-      this._goldenImage.resize(this.imgWidth, this.imgHeight);
-      this._goldenImage.filter(this.cr.INVERT);
-    });
-
+    this._goldenImage = this._copyImage(this._img);
+    this._goldenImage.filter(this.cr.INVERT);
   }
 
   display() {
@@ -122,7 +116,9 @@ export class Eclair {
     });
   }
 
-  private _loadPic() {
-    return new Promise((resolve, reject) => this.cr.loadImage('./eclair.png', resolve, reject));
+  private _copyImage(img: any) {
+    const clone = this.cr.createImage(img.width, img.height);
+    clone.copy(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height);
+    return clone;
   }
 }
