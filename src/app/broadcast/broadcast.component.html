@@ -1,9 +1,5 @@
 <app-video-layer [width]="broadcastService.videoWidth"></app-video-layer>
 
-<app-canvas-layout *ngIf="broadcastService.streamStarted()"
-                   [height]="broadcastService.windowWidth"
-                   [width]="broadcastService.windowWidth"></app-canvas-layout>
-
 <div #dots
      [hidden]="!broadcastService.streamStarted()"
      class="dots">
@@ -15,3 +11,10 @@
        class="window">
   </div>
 </div>
+
+<app-canvas-layout *ngIf="displayGame"
+                   [height]="broadcastService.windowWidth"
+                   [width]="broadcastService.windowWidth"></app-canvas-layout>
+
+<app-controls-layer *ngIf="displayGame"></app-controls-layer>
+

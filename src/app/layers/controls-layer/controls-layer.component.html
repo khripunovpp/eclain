@@ -1,0 +1,17 @@
+@if (gameIsOver()) {
+  <game-dialog title="Game Over">
+    Score: {{ scoreService.score() }}<br>
+    Life: {{ lifeService.life() }}
+
+    <button (click)="gameService.restart()">Tap to continue</button>
+  </game-dialog>
+}
+
+@if (gameIsWon()) {
+  <game-dialog title="Congrats!">
+    Score: {{ scoreService.score() }}<br>
+    Life: {{ lifeService.life() }}
+
+    <button (click)="gameService.restart()">Tap to continue</button>
+  </game-dialog>
+}

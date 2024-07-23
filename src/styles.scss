@@ -1,4 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+@use "vars" as *;
 @font-face {
   font-family: 'GoodDog';
   src: url('/fonts/GoodDog.eot');
@@ -14,8 +14,8 @@
 
 body {
   margin: 0;
-  background-color: #febfa4;
-  color: #11746d;
+  background-color: $bg-color;
+  color: $font-color;
   font-family: "GoodDog", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   font-size-adjust: none;
   line-height: 1.5;

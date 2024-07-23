@@ -14,6 +14,7 @@ import {BroadcastService} from "../services/broadcast.service";
 import {CanvasLayoutComponent} from "../layers/canvas-layout/canvas-layout.component";
 import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
 import {GameService} from "../services/game.service";
+import {ControlsLayerComponent} from "../layers/controls-layer/controls-layer.component";
 
 @Component({
   selector: 'app-broadcast',
@@ -22,7 +23,8 @@ import {GameService} from "../services/game.service";
     JsonPipe,
     NgIf,
     CanvasLayoutComponent,
-    VideoLayerComponent
+    VideoLayerComponent,
+    ControlsLayerComponent
   ],
   templateUrl: './broadcast.component.html',
   styleUrls: ['./broadcast.component.scss'],
@@ -38,6 +40,10 @@ export class BroadcastComponent
   readonly broadcastService = inject(BroadcastService);
   readonly gameService = inject(GameService);
   readonly tf = inject(tfProv)
+
+  get displayGame() {
+    return this.gameService.hasStarted && this.broadcastService.streamStarted()
+  }
 
   ngOnInit() {
   }

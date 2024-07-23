@@ -6,19 +6,24 @@
     <section *ngIf="gameService.hasStarted" @slideDown class="life">Life: {{ lifeService.life() }}</section>
   </header>
   <main class="layout__canvas">
+    @if (showAlreadyWin) {
+      alreadyWon: {{ gameService.alreadyWon() }}
+    }
     @if (supports) {
-      <button *ngIf="displayEnableButton"
-              [disabled]="!readyToEnable"
-              (click)="onButtonClick()"
-              class="enableCamButton">
-        <!--        {{-->
-        <!--          readyToEnable-->
-        <!--            ? 'Enable \nWebcam'-->
-        <!--            : 'Wait \nbitch'-->
-        <!--        }}-->
+      @if (displayEnableButton) {
+        <button
+          [disabled]="!readyToEnable"
+          (click)="onButtonClick()"
+          class="enableCamButton">
+          <!--        {{-->
+          <!--          readyToEnable-->
+          <!--            ? 'Enable \nWebcam'-->
+          <!--            : 'Wait \nbitch'-->
+          <!--        }}-->
 
-        <img alt="" loading="lazy" src="/drake.png">
-      </button>
+          <img alt="" loading="lazy" src="/drake.png">
+        </button>
+      }
 
       <app-broadcast></app-broadcast>
     } @else {

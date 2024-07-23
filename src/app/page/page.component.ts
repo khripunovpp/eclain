@@ -77,6 +77,10 @@ export class PageComponent {
     return !this.cameraService.streamStarted();
   }
 
+  get showAlreadyWin(){
+    return window.location.search.includes('show-win');
+  }
+
   get readyToEnable() {
     return this.modelService.model();
   }

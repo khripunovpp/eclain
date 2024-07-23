@@ -21,10 +21,16 @@ export class EclairsService {
   });
   private _lastEclair?: Eclair;
 
+  reset() {
+    this.eclairs = [];
+    this.eclairsShowed.set(0);
+  }
+
   async createEclairs(
       img: any
   ) {
     try {
+      this.eclairs = [];
       for (let i = 0; i < this.eclairsCount; i++) {
         this._lastEclair = new Eclair(this.cr.renderer, i, this._getPositionByLastEclair(this._lastEclair));
         this._lastEclair.setImage(img);
@@ -36,7 +42,7 @@ export class EclairsService {
     }
   }
 
-  resetEclair(eclair: Eclair) {
+  runEclairAgain(eclair: Eclair) {
     eclair.reset(this._getPositionByLastEclair(this._lastEclair));
     eclair.setOutOfScreen();
     const goldenVal = this.cr.renderer.random();
@@ -48,7 +54,7 @@ export class EclairsService {
   }
 
   hitEclair(eclair: Eclair) {
-    this.resetEclair(eclair);
+    this.runEclairAgain(eclair);
   }
 
   private _getPositionByLastEclair(lastEclair?: Eclair) {

@@ -1,0 +1,17 @@
+@use "src/vars";
+
+.game-dialog {
+  background-color: vars.$bg-color;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 27px;
+  line-height: 1;
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+  }
+}

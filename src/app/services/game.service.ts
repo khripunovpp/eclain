@@ -1,4 +1,4 @@
-import {inject, Injectable, OnInit, signal} from "@angular/core";
+import {computed, inject, Injectable, OnInit, signal} from "@angular/core";
 import {assign, createActor, createMachine} from 'xstate';
 import {PointCords} from "./points.service";
 import {CanvasRendererService} from "./canvas-renderer.service";
@@ -9,17 +9,20 @@ import {LifeService} from "./life.service";
 import p5 from "p5";
 import {Eclair} from "../objects/eclair";
 import {BodyPointsService} from "./body-points.service";
+import {LocalStorageService} from "./local-storage.service";
 
-enum GameStates {
+export enum GameStates {
   Paused = 'Paused',
   Playing = 'Playing',
   Failed = 'Failed',
+  Win = 'Win',
 }
 
-enum GameEvents {
+export enum GameEvents {
   Toggle = 'toggle',
   Start = 'start',
   FailGame = 'failGame',
+  WinGame = 'winGame',
 }
 
 @Injectable({
@@ -35,6 +38,7 @@ export class GameService
     });
   }
 
+  readonly localStorageService = inject(LocalStorageService);
   private _initialState = GameStates.Paused;
   gameState = signal(this._initialState);
   private readonly gameMachine = createMachine({
@@ -48,6 +52,7 @@ export class GameService
         on: {
           [GameEvents.Toggle]: GameStates.Paused,
           [GameEvents.FailGame]: GameStates.Failed,
+          [GameEvents.WinGame]: GameStates.Win,
         },
       },
       [GameStates.Paused]: {
@@ -64,6 +69,13 @@ export class GameService
       [GameStates.Failed]: {
         on: {
           [GameEvents.FailGame]: GameStates.Failed,
+          [GameEvents.Start]: GameStates.Playing,
+        },
+      },
+      [GameStates.Win]: {
+        on: {
+          [GameEvents.WinGame]: GameStates.Win,
+          [GameEvents.Start]: GameStates.Playing,
         },
       },
     },
@@ -92,8 +104,12 @@ export class GameService
     return this.canvasRendererService.renderer;
   }
 
+  get winTheGame() {
+    return this.actor.getSnapshot().value == GameStates.Win;
+  }
+
   get playTheGame() {
-    return !this.isPaused && !this.isGameOver;
+    return !this.isPaused && !this.isGameOver && !this.winTheGame;
   }
 
   get canEat() {
@@ -140,6 +156,17 @@ export class GameService
     });
   }
 
+  winGame() {
+    this.actor.send({
+      type: 'winGame',
+    });
+    this.localStorageService.setItem('win-score', this.scoreService.score())
+  }
+
+  readonly alreadyWon = computed(() => {
+    return !!this.localStorageService.getItem('win-score')
+  });
+
   update() {
     this.renderer.clear();
 
@@ -162,13 +189,18 @@ export class GameService
       }
       eclair.display();
 
-      if (this.canEat && this.faceService.mouth?.collidePointRect(eclair.pos)) {
+      if (this.playTheGame && this.canEat && this.faceService.mouth?.collidePointRect(eclair.pos)) {
         this.eclairsService.hitEclair(eclair);
         if (eclair.golden) {
           this.scoreService.addScore(5)
         } else {
           this.scoreService.increment();
         }
+
+        if (this.scoreService.win) {
+          this.winGame();
+        }
+
         break;
       }
     }
@@ -176,10 +208,19 @@ export class GameService
     this.bodyPointsService.update();
   }
 
+  async restart() {
+    this.lifeService.setLife(1);
+    this.scoreService.setScore(0);
+    // TODO: refactor
+    await this.init();
+    this.start();
+    this.update();
+  }
+
   private _resetEclair(
       eclair: Eclair,
   ) {
-    this.eclairsService.resetEclair(eclair);
+    this.eclairsService.runEclairAgain(eclair);
     this.lifeService.decrement();
   }
 

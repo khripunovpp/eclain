@@ -8,7 +8,7 @@ export class LifeService {
   constructor() {
   }
 
-  private readonly maxLife = 10;
+  private readonly maxLife = 1;
 
   readonly life = signal(this.maxLife)
 

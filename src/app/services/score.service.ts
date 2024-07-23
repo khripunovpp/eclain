@@ -9,6 +9,7 @@ export class ScoreService {
   }
 
   readonly score = signal(0)
+  readonly winScore = 1;
 
   setScore(score: number) {
     this.score.set(score);
@@ -18,15 +19,34 @@ export class ScoreService {
     return this.score();
   }
 
+  get win() {
+    return this.score() >= this.winScore;
+  }
+
   increment() {
-    this.score.update((score) => score + 1);
+    this.score.update((score) => {
+      if (score >= this.winScore) {
+        return this.winScore;
+      }
+      return score + 1;
+    })
   }
 
   decrement() {
-    this.score.update((score) => score - 1);
+    this.score.update((score) => {
+      if (score <= 0) {
+        return 0;
+      }
+      return score - 1;
+    })
   }
 
   addScore(score: number) {
-    this.score.update((current) => current + score);
+    this.score.update((current) => {
+      if (current >= this.winScore || current + score >= this.winScore) {
+        return this.winScore;
+      }
+      return current + score;
+    });
   }
 }
