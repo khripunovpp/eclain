@@ -32,13 +32,14 @@ export class BroadcastService {
     });
   }, this.predictDelay);
   private readonly maxWidth = 640;
+  private readonly videoRatio = 640 / 480;
 
   get videoWidth() {
     const actualWidth = window.innerWidth;
     if (window.innerWidth > this.maxWidth) {
       return this.maxWidth
     } else {
-      return actualWidth
+      return actualWidth * this.videoRatio;
     }
   };
 

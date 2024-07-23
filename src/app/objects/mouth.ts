@@ -17,18 +17,18 @@ export class Mouth {
   }
 
   get width() {
-    return Math.abs(this.pointCords.rightCornerOfMouth.x - this.pointCords.leftCornerOfMouth.x);
+    return 60;
+    // return Math.abs(this.pointCords.rightCornerOfMouth.x - this.pointCords.leftCornerOfMouth.x);
   }
 
   get height() {
-    return Math.abs(this.pointCords.lowerLip.y - this.pointCords.upperLip.y) * 2.5;
+    return 30;
+    // return Math.abs(this.pointCords.lowerLip.y - this.pointCords.upperLip.y) * 2.5;
   }
 
   update() {
 
   }
-
-  private readonly yOffset = 10;
 
   collidePointRect(
       point: p5.Vector,
@@ -36,8 +36,8 @@ export class Mouth {
     if (!this.cr) return false;
     if (this.position.x <= point.x
         && this.position.x + this.width >= point.x
-        && (this.position.y + this.yOffset) <= point.y
-        && (this.position.y + this.yOffset) + this.height >= point.y) {
+        && this.position.y <= point.y
+        && this.position.y + this.height >= point.y) {
       return true;
     } else {
       return false;
