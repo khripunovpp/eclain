@@ -10,6 +10,7 @@ import p5 from "p5";
 import {Eclair} from "../objects/eclair";
 import {BodyPointsService} from "./body-points.service";
 import {LocalStorageService} from "./local-storage.service";
+import {AssetsService} from "./assets.service";
 
 export enum GameStates {
   Paused = 'Paused',
@@ -39,6 +40,9 @@ export class GameService
   }
 
   readonly localStorageService = inject(LocalStorageService);
+  readonly alreadyWon = computed(() => {
+    return !!this.localStorageService.getItem('win-score')
+  });
   private _initialState = GameStates.Paused;
   gameState = signal(this._initialState);
   private readonly gameMachine = createMachine({
@@ -87,6 +91,7 @@ export class GameService
   private readonly scoreService = inject(ScoreService);
   private readonly lifeService = inject(LifeService);
   private readonly bodyPointsService = inject(BodyPointsService);
+  private readonly assetsService = inject(AssetsService);
 
   get isPaused() {
     return this.actor.getSnapshot().value == GameStates.Paused;
@@ -120,8 +125,8 @@ export class GameService
   }
 
   async init() {
-    const img = await this.loadAssets()
-    await this.eclairsService.createEclairs(img);
+    await this.assetsService.loadAssets();
+    await this.eclairsService.createEclairs();
   }
 
   addPoints(
@@ -136,9 +141,6 @@ export class GameService
     });
   }
 
-  loadAssets() {
-    return new Promise((resolve, reject) => this.canvasRendererService.renderer.loadImage('./eclair.png', resolve, reject));
-  }
 
   pause() {
 
@@ -162,10 +164,6 @@ export class GameService
     });
     this.localStorageService.setItem('win-score', this.scoreService.score())
   }
-
-  readonly alreadyWon = computed(() => {
-    return !!this.localStorageService.getItem('win-score')
-  });
 
   update() {
     this.renderer.clear();

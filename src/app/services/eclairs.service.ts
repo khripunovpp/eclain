@@ -1,6 +1,7 @@
 import {computed, inject, Injectable, signal} from "@angular/core";
 import {Eclair} from "../objects/eclair";
 import {CanvasRendererService} from "./canvas-renderer.service";
+import {AssetsService} from "./assets.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class EclairsService {
   eclairs: Eclair[] = []
   eclairsCount = 3;
   eclairsShowed = signal(0);
+  private readonly assetsService = inject(AssetsService);
   private readonly cr = inject(CanvasRendererService);
   eclairsOnScreen = computed(() => {
     return this.eclairs.filter(eclair => {
@@ -26,14 +28,12 @@ export class EclairsService {
     this.eclairsShowed.set(0);
   }
 
-  async createEclairs(
-      img: any
-  ) {
+  async createEclairs() {
     try {
       this.eclairs = [];
       for (let i = 0; i < this.eclairsCount; i++) {
         this._lastEclair = new Eclair(this.cr.renderer, i, this._getPositionByLastEclair(this._lastEclair));
-        this._lastEclair.setImage(img);
+        this._lastEclair.setImage(this.assetsService.get('eclair'));
         this.eclairs.push(this._lastEclair);
       }
       this.eclairsShowed.set(this.eclairsCount);
