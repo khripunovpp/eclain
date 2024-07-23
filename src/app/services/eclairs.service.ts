@@ -43,7 +43,6 @@ export class EclairsService {
     const golden = !this._lastEclair?.golden && goldenVal <= 0.5;
     eclair.setGolden(golden);
 
-    console.log('golden', eclair.golden, goldenVal)
     this._lastEclair = eclair;
     this.eclairsShowed.update((count) => count + 1);
   }

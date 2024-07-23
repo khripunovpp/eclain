@@ -21,7 +21,7 @@ export class Mouth {
   }
 
   get height() {
-    return Math.abs(this.pointCords.lowerLip.y - this.pointCords.upperLip.y);
+    return Math.abs(this.pointCords.lowerLip.y - this.pointCords.upperLip.y) * 2.5;
   }
 
   update() {
