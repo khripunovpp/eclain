@@ -28,14 +28,16 @@ export class Mouth {
 
   }
 
+  private readonly yOffset = 10;
+
   collidePointRect(
       point: p5.Vector,
   ) {
     if (!this.cr) return false;
     if (this.position.x <= point.x
         && this.position.x + this.width >= point.x
-        && this.position.y <= point.y
-        && this.position.y + this.height >= point.y) {
+        && (this.position.y + this.yOffset) <= point.y
+        && (this.position.y + this.yOffset) + this.height >= point.y) {
       return true;
     } else {
       return false;

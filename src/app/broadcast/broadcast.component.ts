@@ -14,7 +14,6 @@ import {BroadcastService} from "../services/broadcast.service";
 import {CanvasLayoutComponent} from "../layers/canvas-layout/canvas-layout.component";
 import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
 import {GameService} from "../services/game.service";
-import {MOBILE_WIDTH} from "../providers/responsive.provider";
 
 @Component({
   selector: 'app-broadcast',
@@ -39,6 +38,7 @@ export class BroadcastComponent
   readonly broadcastService = inject(BroadcastService);
   readonly gameService = inject(GameService);
   readonly tf = inject(tfProv)
+
   ngOnInit() {
   }
 
@@ -50,8 +50,8 @@ export class BroadcastComponent
     });
   }
 
-  enable() {
-    this.broadcastService.enable();
+  async enable() {
+    await this.broadcastService.enable();
     this.gameService.start();
   }
 

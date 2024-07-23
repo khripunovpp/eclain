@@ -7,16 +7,53 @@ import {GameService} from "../services/game.service";
 import {ScoreService} from "../services/score.service";
 import {LifeService} from "../services/life.service";
 import {EclairsService} from "../services/eclairs.service";
+import {animate, state, style, transition, trigger} from "@angular/animations";
+
+const animationsDuration = 250;
 
 @Component({
   selector: 'page',
   standalone: true,
   imports: [
     BroadcastComponent,
-    NgIf
+    NgIf,
   ],
   templateUrl: './page.component.html',
-  styleUrl: './page.component.scss'
+  styleUrl: './page.component.scss',
+  animations: [
+    trigger('slideDown', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(-100%)'
+      })),
+      state('*', style({
+        opacity: 1,
+        transform: 'translateY(0)'
+      })),
+      transition('void => *', [
+        animate(animationsDuration)
+      ]),
+      transition('* => void', [
+        animate(animationsDuration)
+      ]),
+    ]),
+    trigger('slideUp', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(100%)'
+      })),
+      state('*', style({
+        opacity: 1,
+        transform: 'translateY(0)'
+      })),
+      transition('void => *', [
+        animate(animationsDuration)
+      ]),
+      transition('* => void', [
+        animate(animationsDuration)
+      ]),
+    ]),
+  ],
 })
 export class PageComponent {
   readonly cameraService = inject(CameraService);

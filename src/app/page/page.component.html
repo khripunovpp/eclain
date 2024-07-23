@@ -1,26 +1,33 @@
-@if (supports) {
-  <button *ngIf="displayEnableButton"
-          [disabled]="!readyToEnable"
-          (click)="onButtonClick()"
-          class="enableCamButton">
-    {{
-      readyToEnable
-        ? 'Enable \nWebcam'
-        : 'Wait \nbitch'
-    }}
-  </button>
+<div aria-hidden="true" class="bg">
+  <img alt="Creamier" loading="lazy" src="/bg.png">
+</div>
+<section class="layout">
+  <header class="layout__header">
+    <section *ngIf="gameService.hasStarted" @slideDown class="life">Life: {{ lifeService.life() }}</section>
+  </header>
+  <main class="layout__canvas">
+    @if (supports) {
+      <button *ngIf="displayEnableButton"
+              [disabled]="!readyToEnable"
+              (click)="onButtonClick()"
+              class="enableCamButton">
+        <!--        {{-->
+        <!--          readyToEnable-->
+        <!--            ? 'Enable \nWebcam'-->
+        <!--            : 'Wait \nbitch'-->
+        <!--        }}-->
 
-  <p style="color: #fff">Score {{ scoreService.score() }}</p>
-  <p style="color: #fff">Life {{ lifeService.life() }}</p>
-  <p style="color: #fff">Alive {{ !gameService.isGameOver }}</p>
-  <p style="color: #fff">eclairsOnScreen {{ eclairsService.eclairsOnScreen().length }}
-    / {{ eclairsService.eclairsShowed() }}</p>
+        <img alt="" loading="lazy" src="/drake.png">
+      </button>
 
-  <app-broadcast></app-broadcast>
-
-  <button (click)="toggle()">Toggle pause</button>
-} @else {
-  <p class="noSupport">
-    Ohh shit! I'm done, i cannot take it
-  </p>
-}
+      <app-broadcast></app-broadcast>
+    } @else {
+      <p class="noSupport">
+        Ohh shit! I'm done, i cannot take it
+      </p>
+    }
+  </main>
+  <footer class="layout__footer">
+    <section *ngIf="gameService.hasStarted" @slideUp class="score">Score: {{ scoreService.score() }}</section>
+  </footer>
+</section>

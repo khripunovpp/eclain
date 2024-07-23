@@ -10,7 +10,7 @@ export class EclairsService {
   }
 
   eclairs: Eclair[] = []
-  eclairsCount = 5;
+  eclairsCount = 3;
   eclairsShowed = signal(0);
   private readonly cr = inject(CanvasRendererService);
   eclairsOnScreen = computed(() => {

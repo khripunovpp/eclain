@@ -1,5 +1,5 @@
 import {inject, Injectable, OnInit, signal} from "@angular/core";
-import {createActor, createMachine} from 'xstate';
+import {assign, createActor, createMachine} from 'xstate';
 import {PointCords} from "./points.service";
 import {CanvasRendererService} from "./canvas-renderer.service";
 import {FaceService} from "./face.service";
@@ -40,6 +40,9 @@ export class GameService
   private readonly gameMachine = createMachine({
     id: 'game',
     initial: this._initialState,
+    context: {
+      hasStarted: false,
+    },
     states: {
       [GameStates.Playing]: {
         on: {
@@ -50,7 +53,12 @@ export class GameService
       [GameStates.Paused]: {
         on: {
           [GameEvents.Toggle]: GameStates.Playing,
-          [GameEvents.Start]: GameStates.Playing,
+          [GameEvents.Start]: {
+            target: GameStates.Playing,
+            actions: assign({
+              hasStarted: (context) => true
+            })
+          },
         },
       },
       [GameStates.Failed]: {
@@ -74,6 +82,10 @@ export class GameService
 
   get isGameOver() {
     return this.actor.getSnapshot().value == GameStates.Failed;
+  }
+
+  get hasStarted() {
+    return this.actor.getSnapshot().context.hasStarted;
   }
 
   get renderer() {

@@ -31,20 +31,15 @@ export class BroadcastService {
       this.predictWebcam();
     });
   }, this.predictDelay);
-
-  private readonly maxWidthMobile = 320;
-  private readonly maxWidthDesktop = 640;
+  private readonly maxWidth = 640;
 
   get videoWidth() {
     const actualWidth = window.innerWidth;
-    if (this.mobile) {
-      if (actualWidth > this.maxWidthMobile) {
-        return this.maxWidthMobile
-      } else {
-        return actualWidth
-      }
+    if (window.innerWidth > this.maxWidth) {
+      return this.maxWidth
+    } else {
+      return actualWidth
     }
-    return this.maxWidthDesktop;
   };
 
   get cropPoints() {
@@ -84,10 +79,10 @@ export class BroadcastService {
     this.modelService.load();
   }
 
-  enable() {
+  async enable() {
     if (!this.modelService.model()) return;
     if (this.cameraService.supports) {
-      this._enableCam();
+      await this._enableCam();
     } else {
       console.warn('getUserMedia() is not supported by your browser');
     }
@@ -191,10 +186,9 @@ export class BroadcastService {
     });
   }
 
-  private _enableCam() {
-    this.cameraService.enableCam().then(() => {
-      this.pointsService.initQueues();
-      this.predictWebcamThrottled();
-    })
+  private async _enableCam() {
+    await this.cameraService.enableCam()
+    this.pointsService.initQueues();
+    this.predictWebcamThrottled();
   }
 }

@@ -29,8 +29,9 @@ export class Eclair {
 
   velocity = this.cr.createVector(0, 1);
   _goldenImage: any;
-  imgWidth = 20;
-  imgHeight = this.imgWidth;
+  imgRatio = 2.59;
+  imgWidth = 100;
+  imgHeight = this.imgWidth / this.imgRatio;
   golden = false;
   initialState = EclairState.OutOfScreen;
   state = signal(this.initialState);
@@ -78,7 +79,6 @@ export class Eclair {
 
   setImage(img: any) {
     this._img = img;
-    this._img.resize(this.imgWidth, this.imgHeight);
 
     this._goldenImage = this._copyImage(this._img);
     this._goldenImage.filter(this.cr.INVERT);
@@ -91,8 +91,7 @@ export class Eclair {
     }
     this.cr.image(
         this.img,
-        this.pos.x
-        - this.imgWidth / 2,
+        this.pos.x - this.imgWidth / 2,
         this.pos.y - this.imgHeight / 2
     );
 
