@@ -43,6 +43,13 @@ export class BroadcastService {
     }
   };
 
+  get videoHeight() {
+    if (this.mobile) {
+      return this.videoWidth;
+    }
+    return this.videoWidth / this.videoRatio;
+  }
+
   get cropPoints() {
     const [x, y] = this.movenetModelService.getCropPoint();
     return {x, y};

@@ -15,6 +15,7 @@ export class VideoLayerComponent
     read: ElementRef<HTMLVideoElement>
   }) video!: ElementRef<HTMLVideoElement>;
   @Input({required: true}) width!: number;
+  @Input({required: true}) height!: number;
 
   private readonly cameraService = inject(CameraService);
 

@@ -35,6 +35,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex: 1 1 auto;
+    max-height: 90%;
   }
 
   &__header,
@@ -42,7 +44,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex: 1;
+    flex: 1 1 auto;
   }
 }
 
