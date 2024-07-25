@@ -69,6 +69,10 @@ export class PageComponent {
         && (this.websiteOnSSL || this.localhost);
   }
 
+  get layoutHeight() {
+    return window.innerHeight;
+  }
+
   get websiteOnSSL() {
     return window.location.protocol === 'https:';
   }

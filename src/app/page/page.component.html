@@ -1,7 +1,7 @@
 <div aria-hidden="true" class="bg">
   <img alt="Creamier" loading="lazy" src="./bg.png">
 </div>
-<section class="layout">
+<section class="layout" [style.height.px]="layoutHeight">
   <header class="layout__header">
     <section *ngIf="gameService.hasStarted" @slideDown class="life">Life: {{ lifeService.life() }}</section>
   </header>

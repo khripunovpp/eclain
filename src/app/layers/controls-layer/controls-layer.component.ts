@@ -21,6 +21,7 @@ export class ControlsLayerComponent
    readonly lifeService = inject(LifeService);
   readonly gameIsOver = computed(() => this.gameService.gameState() === GameStates.Failed);
   readonly gameIsWon = computed(() => this.gameService.gameState() === GameStates.Win);
+  readonly gamePaused = computed(() => this.gameService.gameState() === GameStates.Paused);
 
   ngOnInit() {
   }
