@@ -62,6 +62,13 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "host": "192.168.1.6",
+            "ssl": true,
+            "port": 8877,
+            "sslKey": "ssl/server.key",
+            "sslCert": "ssl/server.crt"
+          },
           "configurations": {
             "production": {
               "buildTarget": "camera-points:build:production"
