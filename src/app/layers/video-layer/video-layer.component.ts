@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, ElementRef, inject, Input, ViewChild} from '@angular/core';
 import {CameraService} from "../../services/camera.service";
+import {VideoLayerService} from "../../services/video-layer.service";
 
 @Component({
   selector: 'app-video-layer',
@@ -13,10 +14,12 @@ export class VideoLayerComponent
   @ViewChild('webcam', {
     read: ElementRef<HTMLVideoElement>
   }) video!: ElementRef<HTMLVideoElement>;
-  @Input({required: true}) width!: number;
-  @Input({required: true}) height!: number;
 
   readonly cameraService = inject(CameraService);
+  readonly videoLayerService = inject(VideoLayerService);
+
+  readonly containerWidth = this.videoLayerService.videoWidth;
+
 
   ngAfterViewInit() {
     this.cameraService.bind(this.video!.nativeElement);

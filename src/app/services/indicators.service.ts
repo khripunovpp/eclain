@@ -25,7 +25,7 @@ export class IndicatorsService {
 
   private readonly _initialState = window.location.search.includes('indicators')
       ? IndicatorsState.Showed
-      : IndicatorsState.Showed;
+      : IndicatorsState.Hidden;
   private readonly state = signal(this._initialState);
   private readonly stateMachine = createMachine({
     id: 'indicators',

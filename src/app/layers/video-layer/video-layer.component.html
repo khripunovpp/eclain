@@ -1,9 +1,13 @@
-<video #webcam
-       [attr.width]="width"
-       [attr.height]="height"
-       autoplay
-       muted
-       [style.width.px]="width"
-       [style.height.px]="height"
-       playsinline>
-</video>
+<div [style.height.px]="containerWidth"
+     [style.width.px]="containerWidth"
+     class="videoContainer">
+  <video #webcam
+         [attr.height]="videoLayerService.videoHeight"
+         [attr.width]="videoLayerService.videoWidth"
+         [style.height.px]="videoLayerService.videoHeight"
+         [style.width.px]="videoLayerService.videoWidth"
+         autoplay
+         muted
+         playsinline>
+  </video>
+</div>

@@ -1,6 +1,6 @@
 import {InjectionToken} from "@angular/core";
 
-export const MOBILE_WIDTH = new InjectionToken('mobile', {
+export const IS_MOBILE = new InjectionToken('mobile', {
   factory: () => {
     const userAgent = navigator.userAgent || navigator.vendor || (window as any)['opera'];
     const isMobile = /android|iphone|ipad|ipod|opera mini|iemobile|wpdesktop/i.test(userAgent);

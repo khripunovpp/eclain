@@ -9,7 +9,7 @@ export class ScoreService {
   }
 
   readonly score = signal(0)
-  readonly winScore = 1;
+  readonly winScore = 100;
 
   setScore(score: number) {
     this.score.set(score);

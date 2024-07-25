@@ -3,7 +3,7 @@
 </div>
 <section class="layout" [style.height.px]="layoutHeight">
   <header class="layout__header">
-    <section *ngIf="gameService.hasStarted" @slideDown class="life">Life: {{ lifeService.life() }} {{cameraService.ratio}}</section>
+    <section *ngIf="gameService.hasStarted" @slideDown class="life">Life: {{ lifeService.life() }}</section>
   </header>
   <main class="layout__canvas">
     @if (showAlreadyWin) {

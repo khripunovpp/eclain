@@ -4,7 +4,7 @@ import {ModelService} from "./model.service";
 import {MovenetModelService, PointNameAsSting, PredictedCords} from "./movenet-model.service";
 import _ from 'lodash';
 import {PointCords, PointsService} from "./points.service";
-import {MOBILE_WIDTH} from "../providers/responsive.provider";
+import {IS_MOBILE} from "../providers/responsive.provider";
 
 
 @Injectable({
@@ -16,7 +16,7 @@ export class BroadcastService {
 
   dotsRefs: Record<string, any> = {}
   @Output() readonly onPredict = new EventEmitter<PointCords>();
-  private readonly mobile = inject(MOBILE_WIDTH)
+  private readonly mobile = inject(IS_MOBILE)
   private readonly _ngZone = inject(NgZone);
   private readonly cameraService = inject(CameraService);
   readonly streamStarted = this.cameraService.streamStarted
@@ -31,29 +31,6 @@ export class BroadcastService {
       this.predictWebcam();
     });
   }, this.predictDelay);
-  private readonly maxWidth = 640;
-  private readonly videoRatio = 640 / 480;
-  private readonly videoRatioVertical = 480 / 640;
-
-  get ration() {
-    return this.mobile ? this.videoRatioVertical : this.videoRatio;
-  }
-
-  get videoWidth() {
-    if (this.mobile) {
-      return window.innerWidth;
-    }
-    const actualWidth = window.innerWidth;
-    if (window.innerWidth > this.maxWidth) {
-      return this.maxWidth
-    } else {
-      return actualWidth * this.ration;
-    }
-  };
-
-  get videoHeight() {
-    return this.videoWidth / this.ration;
-  }
 
   get cropPoints() {
     const [x, y] = this.movenetModelService.getCropPoint();

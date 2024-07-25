@@ -2,7 +2,7 @@ import {inject, Injectable} from "@angular/core";
 import {tfProv} from "../providers/tf.provider";
 import {ModelService} from "./model.service";
 import {CameraService} from "./camera.service";
-import {MOBILE_WIDTH} from "../providers/responsive.provider";
+import {IS_MOBILE} from "../providers/responsive.provider";
 
 
 export type PointNameAsSting = keyof PredictedCords;
@@ -39,7 +39,7 @@ export class MovenetModelService {
   // canvas = signal<HTMLCanvasElement | null>(null)
   private readonly cameraService = inject(CameraService);
   private readonly tf = inject(tfProv)
-  private readonly mobile = inject(MOBILE_WIDTH)
+  private readonly mobile = inject(IS_MOBILE)
   private readonly modelService = inject(ModelService);
 
   get cropWidth() {
