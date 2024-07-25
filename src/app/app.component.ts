@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {BroadcastComponent} from "./broadcast/broadcast.component";
+import {BroadcastComponent} from "./layers/broadcast/broadcast.component";
 import {PageComponent} from "./page/page.component";
 
 @Component({

@@ -33,21 +33,26 @@ export class BroadcastService {
   }, this.predictDelay);
   private readonly maxWidth = 640;
   private readonly videoRatio = 640 / 480;
+  private readonly videoRatioVertical = 480 / 640;
+
+  get ration() {
+    return this.mobile ? this.videoRatioVertical : this.videoRatio;
+  }
 
   get videoWidth() {
+    if (this.mobile) {
+      return window.innerWidth;
+    }
     const actualWidth = window.innerWidth;
     if (window.innerWidth > this.maxWidth) {
       return this.maxWidth
     } else {
-      return actualWidth * this.videoRatio;
+      return actualWidth * this.ration;
     }
   };
 
   get videoHeight() {
-    if (this.mobile) {
-      return this.videoWidth;
-    }
-    return this.videoWidth / this.videoRatio;
+    return this.videoWidth / this.ration;
   }
 
   get cropPoints() {

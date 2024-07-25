@@ -9,12 +9,12 @@ import {
   viewChild
 } from '@angular/core';
 import {JsonPipe, NgIf} from "@angular/common";
-import {tfProv} from "../providers/tf.provider";
-import {BroadcastService} from "../services/broadcast.service";
-import {CanvasLayoutComponent} from "../layers/canvas-layout/canvas-layout.component";
-import {VideoLayerComponent} from "../layers/video-layer/video-layer.component";
-import {GameService} from "../services/game.service";
-import {ControlsLayerComponent} from "../layers/controls-layer/controls-layer.component";
+import {tfProv} from "../../providers/tf.provider";
+import {BroadcastService} from "../../services/broadcast.service";
+import {CanvasLayoutComponent} from "../canvas-layout/canvas-layout.component";
+import {VideoLayerComponent} from "../video-layer/video-layer.component";
+import {GameService} from "../../services/game.service";
+import {ControlsLayerComponent} from "../controls-layer/controls-layer.component";
 
 @Component({
   selector: 'app-broadcast',

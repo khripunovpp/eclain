@@ -11,6 +11,16 @@ export class CameraService {
   supports = !!(navigator.mediaDevices &&
       navigator.mediaDevices.getUserMedia)
   video: HTMLVideoElement | null = null;
+  ratio = 0;
+  direction: 'v' | 'h' = 'v'
+
+  get isVertical() {
+    return this.direction === 'v';
+  }
+
+  get isHorizontal() {
+    return this.direction === 'h';
+  }
 
   bind(
       videoElement: HTMLVideoElement,
@@ -26,6 +36,10 @@ export class CameraService {
             this.video.srcObject = stream;
             this.video.addEventListener('loadeddata', () => {
               this.streamStarted.set(true);
+              this.ratio = this.video!.videoWidth / this.video!.videoHeight;
+              console.log('ratio', this.ratio)
+              this.direction = this.ratio > 1 ? 'h' : 'v';
+              console.log('direction', this.direction)
               resolve();
             });
           });

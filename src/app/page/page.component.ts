@@ -1,5 +1,5 @@
 import {Component, inject, viewChild} from '@angular/core';
-import {BroadcastComponent} from "../broadcast/broadcast.component";
+import {BroadcastComponent} from "../layers/broadcast/broadcast.component";
 import {NgIf} from "@angular/common";
 import {CameraService} from "../services/camera.service";
 import {ModelService} from '../services/model.service';
@@ -81,7 +81,7 @@ export class PageComponent {
     return !this.cameraService.streamStarted();
   }
 
-  get showAlreadyWin(){
+  get showAlreadyWin() {
     return window.location.search.includes('show-win');
   }
 
