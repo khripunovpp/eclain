@@ -18,7 +18,7 @@ export class AssetsService {
           'eclair.png',
           'pop.png'
         ].map((name) => new Promise((resolve, reject) => this.cr.renderer.loadImage(
-            `/${name}`,
+            `./${name}`,
             (img: p5.Image) => {
               this.assets.set(name.split('.')[0], img);
               resolve(img);

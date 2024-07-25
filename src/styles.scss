@@ -1,12 +1,12 @@
 @use "vars" as *;
 @font-face {
   font-family: 'GoodDog';
-  src: url('/GoodDog.eot');
-  src: url('/GoodDog.eot?#iefix') format('embedded-opentype'),
-  url('/GoodDog.woff2') format('woff2'),
-  url('/GoodDog.woff') format('woff'),
-  url('/GoodDog.ttf') format('truetype'),
-  url('/GoodDog.svg#GoodDog') format('svg');
+  src: url('./../public/GoodDog.eot');
+  src: url('./../public/GoodDog.eot?#iefix') format('embedded-opentype'),
+  url('./../public/GoodDog.woff2') format('woff2'),
+  url('./../public/GoodDog.woff') format('woff'),
+  url('./../public/GoodDog.ttf') format('truetype'),
+  url('./../public/GoodDog.svg#GoodDog') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
