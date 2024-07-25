@@ -23,7 +23,9 @@ export class IndicatorsService {
     });
   }
 
-  private readonly _initialState = IndicatorsState.Hidden;
+  private readonly _initialState = window.location.search.includes('indicators')
+      ? IndicatorsState.Showed
+      : IndicatorsState.Showed;
   private readonly state = signal(this._initialState);
   private readonly stateMachine = createMachine({
     id: 'indicators',
@@ -45,7 +47,6 @@ export class IndicatorsService {
 
   get hidden() {
     return this.state() === IndicatorsState.Hidden
-
   }
 
   show() {
