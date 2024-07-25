@@ -39,3 +39,8 @@ img {
   max-width: 100%;
   user-select: none;
 }
+
+
+.canvasContainer canvas {
+  border: 10px solid rgba(255, 0, 0, 0.5);
+}
